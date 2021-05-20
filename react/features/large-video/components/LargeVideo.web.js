@@ -1,17 +1,16 @@
 // @flow
 
-import React, { Component } from 'react';
+import React, { Component } from "react";
 
-import { Watermarks } from '../../base/react';
-import { connect } from '../../base/redux';
-import { setColorAlpha } from '../../base/util';
-import { fetchCustomBrandingData } from '../../dynamic-branding';
-import { Captions } from '../../subtitles/';
+import { Watermarks } from "../../base/react";
+import { connect } from "../../base/redux";
+import { setColorAlpha } from "../../base/util";
+import { fetchCustomBrandingData } from "../../dynamic-branding";
+import { Captions } from "../../subtitles/";
 
 declare var interfaceConfig: Object;
 
 type Props = {
-
     /**
      * The alpha(opacity) of the background
      */
@@ -20,12 +19,12 @@ type Props = {
     /**
      * The user selected background color.
      */
-     _customBackgroundColor: string,
+    _customBackgroundColor: string,
 
     /**
      * The user selected background image url.
      */
-     _customBackgroundImageUrl: string,
+    _customBackgroundImageUrl: string,
 
     /**
      * Fetches the branding data.
@@ -41,8 +40,8 @@ type Props = {
      * Used to determine the value of the autoplay attribute of the underlying
      * video element.
      */
-    _noAutoPlayVideo: boolean
-}
+    _noAutoPlayVideo: boolean,
+};
 
 /**
  * Implements a React {@link Component} which represents the large video (a.k.a.
@@ -68,47 +67,49 @@ class LargeVideo extends Component<Props> {
      */
     render() {
         const style = this._getCustomSyles();
-        const className = `videocontainer${this.props._isChatOpen ? ' shift-right' : ''}`;
+        const className = `videocontainer${
+            this.props._isChatOpen ? " shift-right" : ""
+        }`;
 
         return (
-            <div
-                className = { className }
-                id = 'largeVideoContainer'
-                style = { style }>
-                <div id = 'sharedVideo'>
-                    <div id = 'sharedVideoIFrame' />
+            <div className={className} id="largeVideoContainer" style={style}>
+                <div id="sharedVideo">
+                    <div id="sharedVideoIFrame" />
                 </div>
-                <div id = 'etherpad' />
+                <div id="etherpad" />
+                <div id="genericiframe" />
 
                 <Watermarks />
 
-                <div id = 'dominantSpeaker'>
-                    <div className = 'dynamic-shadow' />
-                    <div id = 'dominantSpeakerAvatarContainer' />
+                <div id="dominantSpeaker">
+                    <div className="dynamic-shadow" />
+                    <div id="dominantSpeakerAvatarContainer" />
                 </div>
-                <div id = 'remotePresenceMessage' />
-                <span id = 'remoteConnectionMessage' />
-                <div id = 'largeVideoElementsContainer'>
-                    <div id = 'largeVideoBackgroundContainer' />
+                <div id="remotePresenceMessage" />
+                <span id="remoteConnectionMessage" />
+                <div id="largeVideoElementsContainer">
+                    <div id="largeVideoBackgroundContainer" />
 
                     {/*
-                      * FIXME: the architecture of elements related to the large
-                      * video and the naming. The background is not part of
-                      * largeVideoWrapper because we are controlling the size of
-                      * the video through largeVideoWrapper. That's why we need
-                      * another container for the background and the
-                      * largeVideoWrapper in order to hide/show them.
-                      */}
-                    <div id = 'largeVideoWrapper'>
+                     * FIXME: the architecture of elements related to the large
+                     * video and the naming. The background is not part of
+                     * largeVideoWrapper because we are controlling the size of
+                     * the video through largeVideoWrapper. That's why we need
+                     * another container for the background and the
+                     * largeVideoWrapper in order to hide/show them.
+                     */}
+                    <div id="largeVideoWrapper">
                         <video
-                            autoPlay = { !this.props._noAutoPlayVideo }
-                            id = 'largeVideo'
-                            muted = { true }
-                            playsInline = { true } /* for Safari on iOS to work */ />
+                            autoPlay={!this.props._noAutoPlayVideo}
+                            id="largeVideo"
+                            muted={true}
+                            playsInline={true} /* for Safari on iOS to work */
+                        />
                     </div>
                 </div>
-                { interfaceConfig.DISABLE_TRANSCRIPTION_SUBTITLES
-                    || <Captions /> }
+                {interfaceConfig.DISABLE_TRANSCRIPTION_SUBTITLES || (
+                    <Captions />
+                )}
             </div>
         );
     }
@@ -121,25 +122,29 @@ class LargeVideo extends Component<Props> {
      */
     _getCustomSyles() {
         const styles = {};
-        const { _customBackgroundColor, _customBackgroundImageUrl } = this.props;
+        const { _customBackgroundColor, _customBackgroundImageUrl } =
+            this.props;
 
-        styles.backgroundColor = _customBackgroundColor || interfaceConfig.DEFAULT_BACKGROUND;
+        styles.backgroundColor =
+            _customBackgroundColor || interfaceConfig.DEFAULT_BACKGROUND;
 
         if (this.props._backgroundAlpha !== undefined) {
-            const alphaColor = setColorAlpha(styles.backgroundColor, this.props._backgroundAlpha);
+            const alphaColor = setColorAlpha(
+                styles.backgroundColor,
+                this.props._backgroundAlpha
+            );
 
             styles.backgroundColor = alphaColor;
         }
 
         if (_customBackgroundImageUrl) {
             styles.backgroundImage = `url(${_customBackgroundImageUrl})`;
-            styles.backgroundSize = 'cover';
+            styles.backgroundSize = "cover";
         }
 
         return styles;
     }
 }
-
 
 /**
  * Maps (parts of) the Redux state to the associated LargeVideo props.
@@ -149,21 +154,22 @@ class LargeVideo extends Component<Props> {
  * @returns {Props}
  */
 function _mapStateToProps(state) {
-    const testingConfig = state['features/base/config'].testing;
-    const { backgroundColor, backgroundImageUrl } = state['features/dynamic-branding'];
-    const { isOpen: isChatOpen } = state['features/chat'];
+    const testingConfig = state["features/base/config"].testing;
+    const { backgroundColor, backgroundImageUrl } =
+        state["features/dynamic-branding"];
+    const { isOpen: isChatOpen } = state["features/chat"];
 
     return {
-        _backgroundAlpha: state['features/base/config'].backgroundAlpha,
+        _backgroundAlpha: state["features/base/config"].backgroundAlpha,
         _customBackgroundColor: backgroundColor,
         _customBackgroundImageUrl: backgroundImageUrl,
         _isChatOpen: isChatOpen,
-        _noAutoPlayVideo: testingConfig?.noAutoPlayVideo
+        _noAutoPlayVideo: testingConfig?.noAutoPlayVideo,
     };
 }
 
 const _mapDispatchToProps = {
-    _fetchCustomBrandingData: fetchCustomBrandingData
+    _fetchCustomBrandingData: fetchCustomBrandingData,
 };
 
 export default connect(_mapStateToProps, _mapDispatchToProps)(LargeVideo);

@@ -5,13 +5,16 @@ import { getCurrentConference } from "../base/conference";
 import { setActiveModalId } from "../base/modal";
 import { MiddlewareRegistry, StateListenerRegistry } from "../base/redux";
 
-import { TOGGLE_DOCUMENT_EDITING } from "./actionTypes";
-import { setDocumentEditingState, setDocumentUrl } from "./actions";
-import { SHARE_DOCUMENT_VIEW_ID } from "./constants";
+import { TOGGLE_GENERICIFRAME_VISIBILITY } from "./actionTypes";
+import {
+    setGenericIFrameVisibilityState,
+    setGenericIFrameUrl,
+} from "./actions";
+import { SHARE_GENERICIFRAME_VIEW_ID } from "./constants";
 
 declare var APP: Object;
 
-const ETHERPAD_COMMAND = "etherpad";
+const GENERICIFRAME_COMMAND = "genericiframe";
 
 /**
  * Middleware that captures actions related to collaborative document editing
@@ -23,22 +26,22 @@ const ETHERPAD_COMMAND = "etherpad";
 // eslint-disable-next-line no-unused-vars
 MiddlewareRegistry.register(({ dispatch, getState }) => (next) => (action) => {
     switch (action.type) {
-        case TOGGLE_DOCUMENT_EDITING: {
+        case TOGGLE_GENERICIFRAME_VISIBILITY: {
             if (typeof APP === "undefined") {
-                const editing = !getState()["features/etherpad"].editing;
+                const visible = !getState()["features/genericiframe"].visible;
 
-                dispatch(setDocumentEditingState(editing));
+                dispatch(setGenericIFrameVisibilityState(visible));
 
-                if (editing) {
-                    dispatch(setActiveModalId(SHARE_DOCUMENT_VIEW_ID));
+                if (visible) {
+                    dispatch(setActiveModalId(SHARE_GENERICIFRAME_VIEW_ID));
                 } else if (
                     getState()["features/base/modal"].activeModalId ===
-                    SHARE_DOCUMENT_VIEW_ID
+                    SHARE_GENERICIFRAME_VIEW_ID
                 ) {
                     dispatch(setActiveModalId(undefined));
                 }
             } else {
-                APP.UI.emitEvent(UIEvents.ETHERPAD_CLICKED);
+                APP.UI.emitEvent(UIEvents.GENERICIFRAME_CLICKED);
             }
             break;
         }
@@ -56,23 +59,27 @@ StateListenerRegistry.register(
     (state) => getCurrentConference(state),
     (conference, { dispatch, getState }, previousConference) => {
         if (conference) {
-            conference.addCommandListener(ETHERPAD_COMMAND, ({ value }) => {
-                let url;
-                const { etherpad_base: etherpadBase } =
-                    getState()["features/base/config"];
+            conference.addCommandListener(
+                GENERICIFRAME_COMMAND,
+                ({ value }) => {
+                    let url;
+                    const {
+                        genericIFrameTemplateUrl: genericIFrameTemplateUrl,
+                    } = getState()["features/base/config"];
 
-                if (etherpadBase) {
-                    const u = new URL(value, etherpadBase);
+                    if (genericIFrameTemplateUrl) {
+                        const u = new URL(value, genericIFrameTemplateUrl);
 
-                    url = u.toString();
+                        url = u.toString();
+                    }
+
+                    dispatch(setGenericIFrameUrl(url));
                 }
-
-                dispatch(setDocumentUrl(url));
-            });
+            );
         }
 
         if (previousConference) {
-            dispatch(setDocumentUrl(undefined));
+            dispatch(setGenericIFrameUrl(undefined));
         }
     }
 );

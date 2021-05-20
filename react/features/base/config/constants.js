@@ -5,7 +5,7 @@
  * @protected
  * @type string
  */
-export const _CONFIG_STORE_PREFIX = 'config.js';
+export const _CONFIG_STORE_PREFIX = "config.js";
 
 /**
  * The list of all possible UI buttons.
@@ -14,10 +14,36 @@ export const _CONFIG_STORE_PREFIX = 'config.js';
  * @type Array<string>
  */
 export const TOOLBAR_BUTTONS = [
-    'microphone', 'camera', 'closedcaptions', 'desktop', 'embedmeeting', 'fullscreen',
-    'fodeviceselection', 'hangup', 'profile', 'chat', 'recording',
-    'livestreaming', 'etherpad', 'sharedvideo', 'shareaudio', 'settings', 'raisehand',
-    'videoquality', 'filmstrip', 'participants-pane', 'feedback', 'stats', 'shortcuts',
-    'tileview', 'select-background', 'download', 'help', 'mute-everyone', 'mute-video-everyone',
-    'security', 'toggle-camera'
+    "microphone",
+    "camera",
+    "closedcaptions",
+    "desktop",
+    "embedmeeting",
+    "fullscreen",
+    "fodeviceselection",
+    "hangup",
+    "profile",
+    "chat",
+    "recording",
+    "livestreaming",
+    "etherpad",
+    "genericiframe",
+    "sharedvideo",
+    "shareaudio",
+    "settings",
+    "raisehand",
+    "videoquality",
+    "filmstrip",
+    "participants-pane",
+    "feedback",
+    "stats",
+    "shortcuts",
+    "tileview",
+    "select-background",
+    "download",
+    "help",
+    "mute-everyone",
+    "mute-video-everyone",
+    "security",
+    "toggle-camera",
 ];

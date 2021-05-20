@@ -1,33 +1,34 @@
 export default {
-    NICKNAME_CHANGED: 'UI.nickname_changed',
+    NICKNAME_CHANGED: "UI.nickname_changed",
 
     /**
      * Notifies that local user changed email.
      */
-    EMAIL_CHANGED: 'UI.email_changed',
+    EMAIL_CHANGED: "UI.email_changed",
 
     /**
      * Notifies that "start muted" settings changed.
      */
-    AUDIO_MUTED: 'UI.audio_muted',
-    VIDEO_MUTED: 'UI.video_muted',
-    ETHERPAD_CLICKED: 'UI.etherpad_clicked',
-    SHARED_VIDEO_CLICKED: 'UI.start_shared_video',
+    AUDIO_MUTED: "UI.audio_muted",
+    VIDEO_MUTED: "UI.video_muted",
+    ETHERPAD_CLICKED: "UI.etherpad_clicked",
+    GENERICIFRAME_CLICKED: "UI.genericiframe_clicked",
+    SHARED_VIDEO_CLICKED: "UI.start_shared_video",
 
     /**
      * Updates shared video with params: url, state, time(optional)
      * Where url is the video link, state is stop/start/pause and time is the
      * current video playing time.
      */
-    UPDATE_SHARED_VIDEO: 'UI.update_shared_video',
-    TOGGLE_FULLSCREEN: 'UI.toogle_fullscreen',
-    FULLSCREEN_TOGGLED: 'UI.fullscreen_toggled',
-    AUTH_CLICKED: 'UI.auth_clicked',
+    UPDATE_SHARED_VIDEO: "UI.update_shared_video",
+    TOGGLE_FULLSCREEN: "UI.toogle_fullscreen",
+    FULLSCREEN_TOGGLED: "UI.fullscreen_toggled",
+    AUTH_CLICKED: "UI.auth_clicked",
 
     /**
      * Notifies that the audio only mode was toggled.
      */
-    TOGGLE_AUDIO_ONLY: 'UI.toggle_audioonly',
+    TOGGLE_AUDIO_ONLY: "UI.toggle_audioonly",
 
     /**
      * Notifies that a command to toggle the filmstrip has been issued. The
@@ -40,23 +41,23 @@ export default {
      *
      * @see {TOGGLED_FILMSTRIP}
      */
-    TOGGLE_FILMSTRIP: 'UI.toggle_filmstrip',
+    TOGGLE_FILMSTRIP: "UI.toggle_filmstrip",
 
-    TOGGLE_SCREENSHARING: 'UI.toggle_screensharing',
-    HANGUP: 'UI.hangup',
-    LOGOUT: 'UI.logout',
-    VIDEO_DEVICE_CHANGED: 'UI.video_device_changed',
-    AUDIO_DEVICE_CHANGED: 'UI.audio_device_changed',
+    TOGGLE_SCREENSHARING: "UI.toggle_screensharing",
+    HANGUP: "UI.hangup",
+    LOGOUT: "UI.logout",
+    VIDEO_DEVICE_CHANGED: "UI.video_device_changed",
+    AUDIO_DEVICE_CHANGED: "UI.audio_device_changed",
 
     /**
      * Notifies that the side toolbar container has been toggled. The actual
      * event must contain the identifier of the container that has been toggled
      * and information about toggle on or off.
      */
-    SIDE_TOOLBAR_CONTAINER_TOGGLED: 'UI.side_container_toggled',
+    SIDE_TOOLBAR_CONTAINER_TOGGLED: "UI.side_container_toggled",
 
     /**
      * Notifies that the raise hand has been changed.
      */
-    LOCAL_RAISE_HAND_CHANGED: 'UI.local_raise_hand_changed'
+    LOCAL_RAISE_HAND_CHANGED: "UI.local_raise_hand_changed",
 };
