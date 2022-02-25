@@ -4,6 +4,7 @@ import React, { Component } from 'react';
 import { Text, View } from 'react-native';
 
 import { SharedVideo } from '../../../shared-video/components/native';
+import { SharedIFrame } from '../../../shared-iframe/components/native';
 import { Avatar } from '../../avatar';
 import { translate } from '../../i18n';
 import { JitsiParticipantConnectionStatus } from '../../lib-jitsi-meet';
@@ -208,6 +209,7 @@ class ParticipantView extends Component<Props> {
                 ? this.props.testHintId
                 : `org.jitsi.meet.Participant#${this.props.participantId}`;
 
+        const renderSharedVideo = _isFakeParticipant && !disableVideo;
         const renderSharedVideo = _isFakeParticipant && !disableVideo;
 
         return (

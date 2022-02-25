@@ -57,6 +57,7 @@ import {
 } from '../../../screen-share/';
 import SecurityDialogButton from '../../../security/components/security-dialog/web/SecurityDialogButton';
 import { SettingsButton } from '../../../settings';
+import { SharedIFrameButton } from '../../../shared-iframe/components';
 import { SharedVideoButton } from '../../../shared-video/components';
 import { SpeakerStatsButton } from '../../../speaker-stats/components/web';
 import {
@@ -739,6 +740,12 @@ class Toolbox extends Component<Props> {
             group: 3
         };
 
+        const shareIFrame = {
+            key: 'sharediframe',
+            Content: SharedIFrameButton,
+            group: 3
+        };
+
         const shareAudio = this._showAudioSharingButton() && {
             key: 'shareaudio',
             Content: ShareAudioButton,
@@ -820,6 +827,7 @@ class Toolbox extends Component<Props> {
             muteEveryone,
             muteVideoEveryone,
             shareVideo,
+            shareIFrame,
             shareAudio,
             etherpad,
             virtualBackground,

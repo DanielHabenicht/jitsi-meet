@@ -7,6 +7,7 @@ import { Watermarks } from '../../base/react';
 import { connect } from '../../base/redux';
 import { setColorAlpha } from '../../base/util';
 import { FILMSTRIP_BREAKPOINT, isFilmstripResizable } from '../../filmstrip';
+import { SharedIFrame } from '../../shared-iframe/components/web';
 import { SharedVideo } from '../../shared-video/components/web';
 import { Captions } from '../../subtitles/';
 import { setTileView } from '../../video-layout/actions';
@@ -125,6 +126,7 @@ class LargeVideo extends Component<Props> {
                 ref = { this._containerRef }
                 style = { style }>
                 <SharedVideo />
+                <SharedIFrame />
                 <div id = 'etherpad' />
 
                 <Watermarks />
