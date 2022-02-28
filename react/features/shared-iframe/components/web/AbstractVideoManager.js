@@ -146,7 +146,7 @@ class AbstractVideoManager extends PureComponent<Props> {
      */
     componentDidUpdate(prevProps: Props) {
         const { _videoUrl } = this.props;
-
+        debugger;
         if (prevProps._videoUrl !== _videoUrl) {
             sendAnalytics(createEvent('started'));
         }

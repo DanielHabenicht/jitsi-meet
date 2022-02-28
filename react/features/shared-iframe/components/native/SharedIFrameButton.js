@@ -21,7 +21,7 @@ type Props = AbstractButtonProps & {
     _isDisabled: boolean,
 
     /**
-     * Whether or not the local participant is sharing a video.
+     * Whether or not the local participant is sharing an IFrame.
      */
     _sharingIFrame: boolean,
 
@@ -61,7 +61,7 @@ class SharedIFrameButton extends AbstractButton<Props, *> {
      * @returns {boolean}
      */
     _isToggled() {
-        return this.props._sharingVideo;
+        return this.props._sharingIFrame;
     }
 
     /**
@@ -76,7 +76,7 @@ class SharedIFrameButton extends AbstractButton<Props, *> {
     }
 
     /**
-     * Dispatches an action to toggle video sharing.
+     * Dispatches an action to toggle IFrame sharing.
      *
      * @private
      * @returns {void}
@@ -103,14 +103,14 @@ function _mapStateToProps(state, ownProps): Object {
     if (ownerId !== localParticipantId) {
         return {
             _isDisabled: !isSharing,
-            _sharingVideo: false,
+            _sharingIFrame: false,
             visible
         };
     }
 
     return {
         _isDisabled: false,
-        _sharingVideo: isSharing,
+        _sharingIFrame: isSharing,
         visible
     };
 }

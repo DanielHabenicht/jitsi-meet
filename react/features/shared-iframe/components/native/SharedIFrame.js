@@ -46,7 +46,7 @@ type Props = {
     /**
      * The shared video url.
      */
-     iframeUrl: string,
+     iFrameUrl: string,
 }
 
 /** .
@@ -103,10 +103,10 @@ class SharedIFrame extends Component<Props> {
             isOwner,
             playerHeight,
             playerWidth,
-            iframeUrl
+            iFrameUrl
         } = this.props;
 
-        if (!iframeUrl) {
+        if (!iFrameUrl) {
             return null;
         }
 

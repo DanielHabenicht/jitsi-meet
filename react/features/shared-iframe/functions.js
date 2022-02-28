@@ -34,18 +34,25 @@ export function isIFrameSharingActive(stateful: Object | Function): boolean {
  * @param {Function|Object} stateful - The redux store or {@code getState} function.
  * @returns {?string} - Current genericIFrame URL or undefined.
  */
-export function getGenericIFrameUrl(stateful: Function | Object) {
+export function getGenericiFrameUrl(stateful: Function | Object) {
     const state = toState(stateful);
-    let { iframeUrl } = state['features/shared-iframe'];
+
+    let { genericIFrameTemplateUrl } = state['features/base/config'];
+
     const { room } = state['features/base/conference'];
     const lang = i18next.language || DEFAULT_LANGUAGE;
 
-    if (!iframeUrl) {
-        return undefined;
+    if (!genericIFrameTemplateUrl) {
+        // TODO: Check in prod
+        genericIFrameTemplateUrl = 'https://wbo.ophir.dev/boards/{room}?lang={lang}';
+
+        // return undefined;
     }
 
-    iframeUrl = iframeUrl.replace('{room}', room);
-    iframeUrl = iframeUrl.replace('{lang}', lang);
+    let iFrameUrl = genericIFrameTemplateUrl;
 
-    return `${iframeUrl}`;
+    iFrameUrl = iFrameUrl.replace('{room}', room);
+    iFrameUrl = iFrameUrl.replace('{lang}', lang);
+
+    return `${iFrameUrl}`;
 }

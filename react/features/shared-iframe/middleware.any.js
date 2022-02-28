@@ -18,7 +18,6 @@ import {
     setSharedIFrameStatus
 } from './actions.any';
 import { SHARED_IFRAME, IFRAME_PLAYER_PARTICIPANT_NAME } from './constants';
-import { isSharingStatus } from './functions';
 
 /**
  * Middleware that captures actions related to video sharing and updates
@@ -32,23 +31,26 @@ MiddlewareRegistry.register(store => next => action => {
     const state = getState();
     const conference = getCurrentConference(state);
     const localParticipantId = getLocalParticipant(state)?.id;
-    const { videoUrl, isSharing, ownerId, time, muted, volume } = action;
-    const { ownerId: stateOwnerId, videoUrl: statevideoUrl } = state['features/shared-iframe'];
+    const { iFrameUrl, isSharing, ownerId, time, muted, volume } = action;
+    const { ownerId: stateOwnerId, iFrameUrl: stateiFrameUrl } = state['features/shared-iframe'];
 
-    debugger;
     switch (action.type) {
     case CONFERENCE_LEFT:
+        debugger;
+
         dispatch(resetSharedIFrameStatus());
         break;
     case PARTICIPANT_LEFT:
+        debugger;
         if (action.participant.id === stateOwnerId) {
             batch(() => {
                 dispatch(resetSharedIFrameStatus());
-                dispatch(participantLeft(statevideoUrl, conference));
+                dispatch(participantLeft(stateiFrameUrl, conference));
             });
         }
         break;
     case SET_SHARED_IFRAME_STATUS:
+        debugger;
         if (localParticipantId === ownerId) {
             sendShareIFrameCommand({
                 conference,
@@ -56,16 +58,17 @@ MiddlewareRegistry.register(store => next => action => {
                 muted,
                 isSharing,
                 time,
-                id: videoUrl,
+                id: iFrameUrl,
                 volume
             });
         }
         break;
     case RESET_SHARED_IFRAME_STATUS:
+        debugger;
         if (localParticipantId === stateOwnerId) {
             sendShareIFrameCommand({
                 conference,
-                id: statevideoUrl,
+                id: stateiFrameUrl,
                 localParticipantId,
                 muted: true,
                 isSharing: false,
@@ -90,7 +93,7 @@ StateListenerRegistry.register(
         if (conference && conference !== previousConference) {
             conference.addCommandListener(SHARED_IFRAME,
                 ({ value, attributes }) => {
-                    debugger;
+                    // debugger;
 
                     const { dispatch, getState } = store;
                     const { from } = attributes;
@@ -116,30 +119,30 @@ StateListenerRegistry.register(
  * Sets the SharedVideoStatus if the event was triggered by the local user.
  *
  * @param {Store} store - The redux store.
- * @param {string} videoUrl - The id of the video to the shared.
+ * @param {string} iFrameUrl - The id of the video to the shared.
  * @param {Object} attributes - The attributes received from the share video command.
  * @param {JitsiConference} conference - The current conference.
  * @returns {void}
  */
-function handleSharingVideoStatus(store, videoUrl, { state, time, from, muted }, conference) {
+function handleSharingVideoStatus(store, iFrameUrl, { isSharing, time, from, muted }, conference) {
     const { dispatch, getState } = store;
     const localParticipantId = getLocalParticipant(getState()).id;
     const oldStatus = getState()['features/shared-iframe']?.isSharing;
 
     debugger;
-    if (state === 'true') {
+    if (isSharing === 'true') {
         // TODO: Add avatar url
         const avatarURL = '';
 
         dispatch(participantJoined({
             conference,
-            id: videoUrl,
+            id: iFrameUrl,
             isFakeParticipant: true,
             avatarURL,
             name: IFRAME_PLAYER_PARTICIPANT_NAME
         }));
 
-        dispatch(pinParticipant(videoUrl));
+        dispatch(pinParticipant(iFrameUrl));
     }
 
     if (localParticipantId !== from) {
@@ -148,7 +151,7 @@ function handleSharingVideoStatus(store, videoUrl, { state, time, from, muted },
             ownerId: from,
             status: state,
             time: Number(time),
-            videoUrl
+            iFrameUrl
         }));
     }
 }

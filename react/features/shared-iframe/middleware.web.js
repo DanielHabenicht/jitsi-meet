@@ -17,19 +17,20 @@ StateListenerRegistry.register(
     state => getCurrentConference(state),
     (conference, store, previousConference) => {
         if (conference && conference !== previousConference) {
+            debugger;
+
             conference.addCommandListener(SHARED_IFRAME,
                 ({ attributes }) => {
                     const { dispatch, getState } = store;
                     const { from } = attributes;
                     const localParticipantId = getLocalParticipant(getState()).id;
-                    const status = attributes.state;
-                    // debugger;
+                    const isSharing = attributes.isSharing;
 
-                    if (status === 'playing') {
+                    if (isSharing === 'true') {
                         if (localParticipantId !== from) {
                             dispatch(setDisableButton(true));
                         }
-                    } else if (status === 'stop') {
+                    } else if (isSharing !== 'true') {
                         dispatch(setDisableButton(false));
                     }
                 }

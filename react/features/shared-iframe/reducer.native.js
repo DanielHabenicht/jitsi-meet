@@ -10,7 +10,7 @@ const initialState = {};
  * Reduces the Redux actions of the feature features/shared-iframe.
  */
 ReducerRegistry.register('features/shared-iframe', (state = initialState, action) => {
-    const { iframeUrl, status, time, ownerId, muted, volume } = action;
+    const { iFrameUrl, isSharing, time, ownerId, muted, volume } = action;
 
     switch (action.type) {
     case RESET_SHARED_IFRAME_STATUS:
@@ -20,9 +20,9 @@ ReducerRegistry.register('features/shared-iframe', (state = initialState, action
             ...state,
             muted,
             ownerId,
-            status,
+            isSharing,
             time,
-            iframeUrl,
+            iFrameUrl,
             volume
         };
     default:
