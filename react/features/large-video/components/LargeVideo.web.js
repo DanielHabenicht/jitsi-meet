@@ -3,12 +3,15 @@
 import React, { Component } from 'react';
 
 import VideoLayout from '../../../../modules/UI/videolayout/VideoLayout';
+import { getParticipantById } from '../../base/participants';
 import { Watermarks } from '../../base/react';
 import { connect } from '../../base/redux';
 import { setColorAlpha } from '../../base/util';
 import { FILMSTRIP_BREAKPOINT, isFilmstripResizable } from '../../filmstrip';
 import { SharedIFrame } from '../../shared-iframe/components/web';
+import { IFRAME_PLAYER_PARTICIPANT_NAME } from '../../shared-iframe/constants';
 import { SharedVideo } from '../../shared-video/components/web';
+import { VIDEO_PLAYER_PARTICIPANT_NAME, YOUTUBE_PLAYER_PARTICIPANT_NAME } from '../../shared-video/constants';
 import { Captions } from '../../subtitles/';
 import { setTileView } from '../../video-layout/actions';
 
@@ -58,9 +61,23 @@ type Props = {
     _visibleFilmstrip: boolean,
 
     /**
+     * True if the participant which this component represents is fake.
+     *
+     * @private
+     */
+    _isFakeParticipant: boolean,
+
+    /**
+     * The Name of the participant (to be) depicted by {@link LargeVideo}.
+     *
+     * @public
+     */
+     _participantName: string,
+
+    /**
      * The Redux dispatch function.
      */
-    dispatch: Function
+    dispatch: Function,
 }
 
 /** .
@@ -114,10 +131,21 @@ class LargeVideo extends Component<Props> {
     render() {
         const {
             _isChatOpen,
-            _noAutoPlayVideo
+            _noAutoPlayVideo,
+            _isFakeParticipant,
+            _participantName
         } = this.props;
         const style = this._getCustomSyles();
         const className = `videocontainer${_isChatOpen ? ' shift-right' : ''}`;
+
+        const renderSharedVideo = _isFakeParticipant
+            && (
+                _participantName === VIDEO_PLAYER_PARTICIPANT_NAME
+                || _participantName === YOUTUBE_PLAYER_PARTICIPANT_NAME)
+            ;
+        const renderSharedIFrame = _isFakeParticipant
+            && _participantName === IFRAME_PLAYER_PARTICIPANT_NAME;
+        debugger;
 
         return (
             <div
@@ -125,18 +153,19 @@ class LargeVideo extends Component<Props> {
                 id = 'largeVideoContainer'
                 ref = { this._containerRef }
                 style = { style }>
-                <SharedVideo />
-                <SharedIFrame />
+                { renderSharedVideo && <SharedVideo /> }
+                { renderSharedIFrame && <SharedIFrame /> }
+
                 <div id = 'etherpad' />
 
                 <Watermarks />
 
-                <div
+                { !renderSharedIFrame && !renderSharedVideo && <div
                     id = 'dominantSpeaker'
                     onTouchEnd = { this._onDoubleTap }>
                     <div className = 'dynamic-shadow' />
                     <div id = 'dominantSpeakerAvatarContainer' />
-                </div>
+                </div>}
                 <div id = 'remotePresenceMessage' />
                 <span id = 'remoteConnectionMessage' />
                 <div id = 'largeVideoElementsContainer'>
@@ -277,6 +306,10 @@ function _mapStateToProps(state) {
     const { backgroundColor, backgroundImageUrl } = state['features/dynamic-branding'];
     const { isOpen: isChatOpen } = state['features/chat'];
     const { width: verticalFilmstripWidth, visible } = state['features/filmstrip'];
+    const { participantId } = state['features/large-video'];
+    const participant = getParticipantById(state, participantId);
+
+    debugger;
 
     return {
         _backgroundAlpha: state['features/base/config'].backgroundAlpha,
@@ -286,7 +319,9 @@ function _mapStateToProps(state) {
         _noAutoPlayVideo: testingConfig?.noAutoPlayVideo,
         _resizableFilmstrip: isFilmstripResizable(state),
         _verticalFilmstripWidth: verticalFilmstripWidth.current,
-        _visibleFilmstrip: visible
+        _visibleFilmstrip: visible,
+        _participantName: participant && participant.name,
+        _isFakeParticipant: participant && participant.isFakeParticipant
     };
 }
 

@@ -16,10 +16,12 @@ import { Container, TintedView } from '../../react';
 import { connect } from '../../redux';
 import type { StyleType } from '../../styles';
 import { TestHint } from '../../testing/components';
-import { getTrackByMediaTypeAndParticipant } from '../../tracks';
+import { getTrackByMediaTypeAndParticipant, _disposeAndRemoveTracks } from '../../tracks';
 import { shouldRenderParticipantVideo, getParticipantById } from '../functions';
 
 import styles from './styles';
+import { IFRAME_PLAYER_PARTICIPANT_NAME } from '../../../shared-iframe/constants';
+import { VIDEO_PLAYER_PARTICIPANT_NAME, YOUTUBE_PLAYER_PARTICIPANT_NAME } from '../../../shared-video/constants';
 
 /**
  * The type of the React {@link Component} props of {@link ParticipantView}.
@@ -191,6 +193,7 @@ class ParticipantView extends Component<Props> {
         const {
             _connectionStatus: connectionStatus,
             _isFakeParticipant,
+            _participantName,
             _renderVideo: renderVideo,
             _videoTrack: videoTrack,
             disableVideo,
@@ -209,12 +212,17 @@ class ParticipantView extends Component<Props> {
                 ? this.props.testHintId
                 : `org.jitsi.meet.Participant#${this.props.participantId}`;
 
-        const renderSharedVideo = _isFakeParticipant && !disableVideo;
-        const renderSharedVideo = _isFakeParticipant && !disableVideo;
+        const renderSharedVideo = _isFakeParticipant
+            && (
+                _participantName === VIDEO_PLAYER_PARTICIPANT_NAME
+                || _participantName === YOUTUBE_PLAYER_PARTICIPANT_NAME)
+            && !disableVideo;
+        const renderSharedIFrame = _isFakeParticipant
+            && _participantName === IFRAME_PLAYER_PARTICIPANT_NAME && !disableVideo;
 
         return (
             <Container
-                onClick = { renderVideo || renderSharedVideo ? undefined : onPress }
+                onClick = { renderVideo || renderSharedVideo || renderSharedIFrame ? undefined : onPress }
                 style = {{
                     ...styles.participantView,
                     ...this.props.style
@@ -227,6 +235,7 @@ class ParticipantView extends Component<Props> {
                     value = '' />
 
                 { renderSharedVideo && <SharedVideo /> }
+                { renderSharedIFrame && <SharedIFrame /> }
 
                 { !_isFakeParticipant && renderVideo
                     && <VideoTrack
@@ -236,7 +245,7 @@ class ParticipantView extends Component<Props> {
                         zOrder = { this.props.zOrder }
                         zoomEnabled = { this.props.zoomEnabled } /> }
 
-                { !renderSharedVideo && !renderVideo
+                { !renderSharedIFrame && !renderSharedVideo && !renderVideo
                     && <View style = { styles.avatarContainer }>
                         <Avatar
                             participantId = { this.props.participantId }

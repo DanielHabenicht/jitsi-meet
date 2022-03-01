@@ -7,8 +7,8 @@ import { getLocalParticipant } from '../../../base/participants';
 import { connect } from '../../../base/redux';
 import { getToolboxHeight } from '../../../toolbox/functions.web';
 
-import VideoManager from './VideoManager';
-import YoutubeVideoManager from './YoutubeVideoManager';
+import IFrameManager from './IFrameManager';
+
 
 declare var interfaceConfig: Object;
 
@@ -35,9 +35,9 @@ type Props = {
     isOwner: boolean,
 
     /**
-     * The shared video url.
+     * The shared iframe url.
      */
-    videoUrl: string,
+     iFrameUrl: string,
 }
 
 /** .
@@ -84,40 +84,24 @@ class SharedIFrame extends Component<Props> {
     }
 
     /**
-     * Retrieves the manager to be used for playing the shared video.
-     *
-     * @returns {Component}
-     */
-    getManager() {
-        const { videoUrl } = this.props;
-
-        if (!videoUrl) {
-            return null;
-        }
-
-        if (videoUrl.match(/http/)) {
-            return <VideoManager videoId = { videoUrl } />;
-        }
-
-        return <YoutubeVideoManager videoId = { videoUrl } />;
-    }
-
-    /**
      * Implements React's {@link Component#render()}.
      *
      * @inheritdoc
      * @returns {React$Element}
      */
     render() {
-        const { isOwner } = this.props;
-        const className = isOwner ? '' : 'disable-pointer';
+        const { isOwner, iFrameUrl } = this.props;
+        const className = '';// isOwner ? '' : 'disable-pointer';
+
+        debugger;
 
         return (
             <div
                 className = { className }
                 id = 'sharedIFrame'
                 style = { this.getDimensions() }>
-                {this.getManager()}
+                <IFrameManager
+                    iFrameUrl = { iFrameUrl } />
             </div>
         );
     }
@@ -132,7 +116,7 @@ class SharedIFrame extends Component<Props> {
  * @returns {Props}
  */
 function _mapStateToProps(state) {
-    const { ownerId, videoUrl } = state['features/shared-iframe'];
+    const { ownerId, iFrameUrl } = state['features/shared-iframe'];
     const { clientHeight, clientWidth } = state['features/base/responsive-ui'];
     const { visible } = state['features/filmstrip'];
 
@@ -143,7 +127,7 @@ function _mapStateToProps(state) {
         clientWidth,
         filmstripVisible: visible,
         isOwner: ownerId === localParticipant?.id,
-        videoUrl
+        iFrameUrl
     };
 }
 

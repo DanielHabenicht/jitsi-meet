@@ -12,8 +12,6 @@ import { getGenericiFrameUrl } from './functions';
  * }}
  */
 export function resetSharedIFrameStatus() {
-    debugger;
-
     return {
         type: RESET_SHARED_IFRAME_STATUS
     };
@@ -60,7 +58,6 @@ export function setSharedIFrameStatus({ iFrameUrl, isSharing, time, ownerId, mut
 export function showSharedIFrame(iFrameUrl) {
     return (dispatch, getState) => {
         const conference = getCurrentConference(getState());
-        debugger;
 
         if (conference) {
             const localParticipant = getLocalParticipant(getState());
@@ -86,7 +83,6 @@ export function stopSharedIFrame() {
         const state = getState();
         const { ownerId } = state['features/shared-iframe'];
         const localParticipant = getLocalParticipant(state);
-        debugger;
 
         if (ownerId === localParticipant.id) {
             dispatch(resetSharedIFrameStatus());
@@ -104,7 +100,7 @@ export function toggleSharedIFrame() {
     return (dispatch, getState) => {
         const state = getState();
         const { isSharing } = state['features/shared-iframe'];
-        debugger;
+
         if (isSharing === 'true') {
             dispatch(stopSharedIFrame());
         } else {

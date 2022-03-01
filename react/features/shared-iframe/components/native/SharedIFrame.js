@@ -8,9 +8,17 @@ import { connect } from '../../../base/redux';
 import { ASPECT_RATIO_WIDE } from '../../../base/responsive-ui';
 import { setToolboxVisible } from '../../../toolbox/actions';
 
-import VideoManager from './VideoManager';
-import YoutubeVideoManager from './YoutubeVideoManager';
 import styles from './styles';
+
+/**
+ * Default genericiframe frame width.
+ */
+const DEFAULT_WIDTH = 640;
+
+/**
+  * Default genericiframe frame height.
+  */
+const DEFAULT_HEIGHT = 480;
 
 type Props = {
 
@@ -57,7 +65,7 @@ type Props = {
  */
 class SharedIFrame extends Component<Props> {
     /**
-     * Initializes a new {@code SharedVideo} instance.
+     * Initializes a new {@code SharedIFrame} instance.
      *
      * @param {Object} props - The properties.
      */
@@ -65,6 +73,18 @@ class SharedIFrame extends Component<Props> {
         super(props);
 
         this.setWideScreenMode(props.isWideScreen);
+        const iframe = document.createElement('iframe');
+
+        iframe.id = 'genericiframe';
+        iframe.src = props.iFrameUrl;
+        iframe.frameBorder = 0;
+        iframe.scrolling = 'no';
+        iframe.width = DEFAULT_WIDTH;
+        iframe.height = DEFAULT_HEIGHT;
+        iframe.setAttribute('style', 'visibility: hidden;');
+
+        this.container.appendChild(iframe);
+        this.iframe = iframe;
     }
 
     /**
@@ -114,7 +134,8 @@ class SharedIFrame extends Component<Props> {
             <View
                 pointerEvents = { isOwner ? 'auto' : 'none' }
                 style = { styles.videoContainer } >
-                <div>Shared IFrame</div>
+                <div>Native</div>
+                ${this.iframe}
                 {/* {videoUrl.match(/http/)
                     ? (
                         <VideoManager
@@ -166,4 +187,4 @@ function _mapStateToProps(state) {
     };
 }
 
-export default connect(_mapStateToProps)(SharedVideo);
+export default connect(_mapStateToProps)(SharedIFrame);

@@ -14,18 +14,17 @@ import { IFRAME_PLAYER_PARTICIPANT_NAME } from './constants';
  */
 export function isIFrameSharingActive(stateful: Object | Function): boolean {
 
-    // TODO: Rename into IsIFrameActive?
-    let iFramePlaying = false;
+    let isIFrameActive = false;
 
     // eslint-disable-next-line no-unused-vars
     for (const [ id, p ] of getFakeParticipants(stateful)) {
         if (p.name === IFRAME_PLAYER_PARTICIPANT_NAME) {
-            iFramePlaying = true;
+            isIFrameActive = true;
             break;
         }
     }
 
-    return iFramePlaying;
+    return isIFrameActive;
 }
 
 /**

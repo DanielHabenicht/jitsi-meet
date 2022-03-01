@@ -1095,6 +1095,7 @@
         "stopAudioSharing": "Stop audio sharing",
         "stopScreenSharing": "Stop screen sharing",
         "stopSharedVideo": "Stop video",
+        "stopSharedIFrame": "Stop IFrame",
         "stopSubtitles": "Stop subtitles",
         "surprised": "Surprised",
         "talkWhileMutedPopup": "Trying to speak? You are muted.",

@@ -17,8 +17,6 @@ StateListenerRegistry.register(
     state => getCurrentConference(state),
     (conference, store, previousConference) => {
         if (conference && conference !== previousConference) {
-            debugger;
-
             conference.addCommandListener(SHARED_IFRAME,
                 ({ attributes }) => {
                     const { dispatch, getState } = store;

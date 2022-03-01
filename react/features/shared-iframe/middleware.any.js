@@ -31,17 +31,14 @@ MiddlewareRegistry.register(store => next => action => {
     const state = getState();
     const conference = getCurrentConference(state);
     const localParticipantId = getLocalParticipant(state)?.id;
-    const { iFrameUrl, isSharing, ownerId, time, muted, volume } = action;
+    const { iFrameUrl, isSharing, ownerId, volume } = action;
     const { ownerId: stateOwnerId, iFrameUrl: stateiFrameUrl } = state['features/shared-iframe'];
 
     switch (action.type) {
     case CONFERENCE_LEFT:
-        debugger;
-
         dispatch(resetSharedIFrameStatus());
         break;
     case PARTICIPANT_LEFT:
-        debugger;
         if (action.participant.id === stateOwnerId) {
             batch(() => {
                 dispatch(resetSharedIFrameStatus());
@@ -50,21 +47,17 @@ MiddlewareRegistry.register(store => next => action => {
         }
         break;
     case SET_SHARED_IFRAME_STATUS:
-        debugger;
         if (localParticipantId === ownerId) {
             sendShareIFrameCommand({
                 conference,
                 localParticipantId,
-                muted,
                 isSharing,
-                time,
                 id: iFrameUrl,
                 volume
             });
         }
         break;
     case RESET_SHARED_IFRAME_STATUS:
-        debugger;
         if (localParticipantId === stateOwnerId) {
             sendShareIFrameCommand({
                 conference,
@@ -93,14 +86,12 @@ StateListenerRegistry.register(
         if (conference && conference !== previousConference) {
             conference.addCommandListener(SHARED_IFRAME,
                 ({ value, attributes }) => {
-                    // debugger;
-
                     const { dispatch, getState } = store;
                     const { from } = attributes;
                     const localParticipantId = getLocalParticipant(getState()).id;
 
                     if (attributes.isSharing === 'true') {
-                        handleSharingVideoStatus(store, value, attributes, conference);
+                        handleSharingIFrame(store, value, attributes, conference);
                     } else {
                         dispatch(participantLeft(value, conference));
                         if (localParticipantId !== from) {
@@ -119,12 +110,12 @@ StateListenerRegistry.register(
  * Sets the SharedVideoStatus if the event was triggered by the local user.
  *
  * @param {Store} store - The redux store.
- * @param {string} iFrameUrl - The id of the video to the shared.
- * @param {Object} attributes - The attributes received from the share video command.
+ * @param {string} iFrameUrl - The id of the iframe to the shared.
+ * @param {Object} attributes - The attributes received from the share iframe command.
  * @param {JitsiConference} conference - The current conference.
  * @returns {void}
  */
-function handleSharingVideoStatus(store, iFrameUrl, { isSharing, time, from, muted }, conference) {
+function handleSharingIFrame(store, iFrameUrl, { isSharing, from }, conference) {
     const { dispatch, getState } = store;
     const localParticipantId = getLocalParticipant(getState()).id;
     const oldStatus = getState()['features/shared-iframe']?.isSharing;
@@ -133,7 +124,6 @@ function handleSharingVideoStatus(store, iFrameUrl, { isSharing, time, from, mut
     if (isSharing === 'true') {
         // TODO: Add avatar url
         const avatarURL = '';
-
         dispatch(participantJoined({
             conference,
             id: iFrameUrl,
@@ -147,10 +137,8 @@ function handleSharingVideoStatus(store, iFrameUrl, { isSharing, time, from, mut
 
     if (localParticipantId !== from) {
         dispatch(setSharedIFrameStatus({
-            muted: muted === 'true',
             ownerId: from,
-            status: state,
-            time: Number(time),
+            isSharing,
             iFrameUrl
         }));
     }
