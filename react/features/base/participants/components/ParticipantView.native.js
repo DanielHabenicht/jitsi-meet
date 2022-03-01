@@ -4,7 +4,7 @@ import React, { Component } from 'react';
 import { Text, View } from 'react-native';
 
 import { SharedVideo } from '../../../shared-video/components/native';
-import { SharedIFrame } from '../../../shared-iframe/components/native';
+import { SharedIFrame } from '../../../shared-iframe/components';
 import { Avatar } from '../../avatar';
 import { translate } from '../../i18n';
 import { JitsiParticipantConnectionStatus } from '../../lib-jitsi-meet';

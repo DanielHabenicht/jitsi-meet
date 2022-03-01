@@ -2,10 +2,10 @@
 
 import React, { Component } from 'react';
 
-import Filmstrip from '../../../../../modules/UI/videolayout/Filmstrip';
-import { getLocalParticipant } from '../../../base/participants';
-import { connect } from '../../../base/redux';
-import { getToolboxHeight } from '../../../toolbox/functions.web';
+import Filmstrip from '../../../../modules/UI/videolayout/Filmstrip';
+import { getLocalParticipant } from '../../base/participants';
+import { connect } from '../../base/redux';
+import { getToolboxHeight } from '../../toolbox/functions.web';
 
 import IFrameManager from './IFrameManager';
 
@@ -90,14 +90,10 @@ class SharedIFrame extends Component<Props> {
      * @returns {React$Element}
      */
     render() {
-        const { isOwner, iFrameUrl } = this.props;
-        const className = '';// isOwner ? '' : 'disable-pointer';
-
-        debugger;
+        const { iFrameUrl } = this.props;
 
         return (
             <div
-                className = { className }
                 id = 'sharedIFrame'
                 style = { this.getDimensions() }>
                 <IFrameManager

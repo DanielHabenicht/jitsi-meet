@@ -2,14 +2,14 @@
 
 import type { Dispatch } from 'redux';
 
-import { translate } from '../../../base/i18n';
-import { IconShareIFrame } from '../../../base/icons';
-import { connect } from '../../../base/redux';
+import { translate } from '../../base/i18n';
+import { IconShareIFrame } from '../../base/icons';
+import { connect } from '../../base/redux';
 import {
     AbstractButton,
     type AbstractButtonProps
-} from '../../../base/toolbox/components';
-import { toggleSharedIFrame } from '../../actions.any';
+} from '../../base/toolbox/components';
+import { toggleSharedIFrame } from '../actions.any';
 
 type Props = AbstractButtonProps & {
 

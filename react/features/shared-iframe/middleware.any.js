@@ -20,7 +20,7 @@ import {
 import { SHARED_IFRAME, IFRAME_PLAYER_PARTICIPANT_NAME } from './constants';
 
 /**
- * Middleware that captures actions related to video sharing and updates
+ * Middleware that captures actions related to iframe sharing and updates
  * components not hooked into redux.
  *
  * @param {Store} store - The redux store.
@@ -105,9 +105,8 @@ StateListenerRegistry.register(
 );
 
 /**
- * Handles the playing, pause and start statuses for the shared video.
+ * Handles showing and hiding of the shared iframe.
  * Dispatches participantJoined event and, if necessary, pins it.
- * Sets the SharedVideoStatus if the event was triggered by the local user.
  *
  * @param {Store} store - The redux store.
  * @param {string} iFrameUrl - The id of the iframe to the shared.
@@ -118,12 +117,11 @@ StateListenerRegistry.register(
 function handleSharingIFrame(store, iFrameUrl, { isSharing, from }, conference) {
     const { dispatch, getState } = store;
     const localParticipantId = getLocalParticipant(getState()).id;
-    const oldStatus = getState()['features/shared-iframe']?.isSharing;
 
-    debugger;
     if (isSharing === 'true') {
         // TODO: Add avatar url
         const avatarURL = '';
+
         dispatch(participantJoined({
             conference,
             id: iFrameUrl,
@@ -147,24 +145,20 @@ function handleSharingIFrame(store, iFrameUrl, { isSharing, from }, conference) 
 /* eslint-disable max-params */
 
 /**
- * Sends SHARED_VIDEO command.
+ * Sends SHARED_IFRAME command.
  *
  * @param {string} id - The id of the video.
- * @param {string} status - The status of the shared video.
+ * @param {string} isSharing - The status of the shared iframe.
  * @param {JitsiConference} conference - The current conference.
  * @param {string} localParticipantId - The id of the local participant.
- * @param {string} time - The seek position of the video.
  * @returns {void}
  */
-function sendShareIFrameCommand({ id, isSharing, conference, localParticipantId, time, muted, volume }) {
+function sendShareIFrameCommand({ id, isSharing, conference, localParticipantId }) {
     conference.sendCommandOnce(SHARED_IFRAME, {
         value: id,
         attributes: {
             from: localParticipantId,
-            muted,
-            isSharing,
-            time,
-            volume
+            isSharing
         }
     });
 }

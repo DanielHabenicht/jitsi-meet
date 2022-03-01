@@ -3,13 +3,13 @@
 import Logger from '@jitsi/logger';
 import React from 'react';
 
-import { sendAnalytics, createSharedVideoEvent as createEvent } from '../../../analytics';
-import { getCurrentConference } from '../../../base/conference';
-import { getLocalParticipant } from '../../../base/participants';
-import { connect } from '../../../base/redux';
-import { NOTIFICATION_TIMEOUT_TYPE } from '../../../notifications';
-import { showWarningNotification } from '../../../notifications/actions';
-import { dockToolbox } from '../../../toolbox/actions.web';
+import { sendAnalytics, createSharedVideoEvent as createEvent } from '../../analytics';
+import { getCurrentConference } from '../../base/conference';
+import { getLocalParticipant } from '../../base/participants';
+import { connect } from '../../base/redux';
+import { NOTIFICATION_TIMEOUT_TYPE } from '../../notifications';
+import { showWarningNotification } from '../../notifications/actions';
+import { dockToolbox } from '../../toolbox/actions.web';
 
 const logger = Logger.getLogger(__filename);
 
@@ -44,11 +44,6 @@ export type Props = {
      * The shared video owner id.
      */
     _ownerId: string,
-
-    /**
-     * Updates the shared video status.
-     */
-    _setSharedVideoStatus: Function,
 
     /**
      * The video url.
@@ -150,8 +145,7 @@ class IFrameManager extends React.PureComponent<Props> {
      * @inheritdoc
      */
     render() {
-        const { _iFrameUrl, } = this.props;
-        debugger;
+        const { _iFrameUrl } = this.props;
 
         return (<iframe
             frameBorder = { 0 }

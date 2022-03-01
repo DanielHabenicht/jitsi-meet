@@ -10,7 +10,7 @@ import { SHARED_IFRAME } from './constants';
 import './middleware.any';
 
 /**
- * Set up state change listener to disable or enable the share video button in
+ * Set up state change listener to disable or enable the share iframe button in
  * the toolbar menu.
  */
 StateListenerRegistry.register(

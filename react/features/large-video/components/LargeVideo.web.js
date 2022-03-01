@@ -8,7 +8,7 @@ import { Watermarks } from '../../base/react';
 import { connect } from '../../base/redux';
 import { setColorAlpha } from '../../base/util';
 import { FILMSTRIP_BREAKPOINT, isFilmstripResizable } from '../../filmstrip';
-import { SharedIFrame } from '../../shared-iframe/components/web';
+import { SharedIFrame } from '../../shared-iframe/components';
 import { IFRAME_PLAYER_PARTICIPANT_NAME } from '../../shared-iframe/constants';
 import { SharedVideo } from '../../shared-video/components/web';
 import { VIDEO_PLAYER_PARTICIPANT_NAME, YOUTUBE_PLAYER_PARTICIPANT_NAME } from '../../shared-video/constants';
@@ -141,11 +141,9 @@ class LargeVideo extends Component<Props> {
         const renderSharedVideo = _isFakeParticipant
             && (
                 _participantName === VIDEO_PLAYER_PARTICIPANT_NAME
-                || _participantName === YOUTUBE_PLAYER_PARTICIPANT_NAME)
-            ;
+                || _participantName === YOUTUBE_PLAYER_PARTICIPANT_NAME);
         const renderSharedIFrame = _isFakeParticipant
             && _participantName === IFRAME_PLAYER_PARTICIPANT_NAME;
-        debugger;
 
         return (
             <div
@@ -308,8 +306,6 @@ function _mapStateToProps(state) {
     const { width: verticalFilmstripWidth, visible } = state['features/filmstrip'];
     const { participantId } = state['features/large-video'];
     const participant = getParticipantById(state, participantId);
-
-    debugger;
 
     return {
         _backgroundAlpha: state['features/base/config'].backgroundAlpha,
