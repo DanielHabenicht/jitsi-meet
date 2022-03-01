@@ -612,6 +612,7 @@ var config = {
     //    'settings',
     //    'shareaudio',
     //    'sharedvideo',
+    //    'sharediframe',
     //    'shortcuts',
     //    'stats',
     //    'tileview',
@@ -677,6 +678,7 @@ var config = {
     //     'settings',
     //     'shareaudio',
     //     'sharedvideo',
+    //     'sharediframe',
     //     'shortcuts',
     //     'stats',
     //     'tileview',
@@ -1116,6 +1118,14 @@ var config = {
     // If set, add a "Open shared document" link to the bottom right menu that
     // will open an etherpad document.
     // etherpad_base: 'https://your-etherpad-installati.on/p/',
+
+
+    // Generic IFrame to be used for any application you like. You can name the menu entries in "/lang/main.json"
+    // The link supports template strings for:
+    //  - {room} - The room id
+    //  - {lang} - The ISO Language tag
+    //
+    // genericIFrameTemplateUrl: 'https://example.com/link/to/your/iframe/app/{room}?lang={lang}',
 
     // List of undocumented settings used in jitsi-meet
     /**
