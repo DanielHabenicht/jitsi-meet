@@ -30,14 +30,14 @@ type Props = {
     filmstripVisible: boolean,
 
     /**
-     * Is the video shared by the local user.
+     * Is the iframe shared by the local user.
      */
     isOwner: boolean,
 
     /**
      * The shared iframe url.
      */
-     iFrameUrl: string,
+    iFrameUrl: string,
 }
 
 /** .

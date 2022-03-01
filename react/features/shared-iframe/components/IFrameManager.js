@@ -3,12 +3,10 @@
 import Logger from '@jitsi/logger';
 import React from 'react';
 
-import { sendAnalytics, createSharedVideoEvent as createEvent } from '../../analytics';
+import { sendAnalytics, createSharedIFrameEvent as createEvent } from '../../analytics';
 import { getCurrentConference } from '../../base/conference';
 import { getLocalParticipant } from '../../base/participants';
 import { connect } from '../../base/redux';
-import { NOTIFICATION_TIMEOUT_TYPE } from '../../notifications';
-import { showWarningNotification } from '../../notifications/actions';
 import { dockToolbox } from '../../toolbox/actions.web';
 
 const logger = Logger.getLogger(__filename);
@@ -24,45 +22,35 @@ export type Props = {
     _conference: Object,
 
     /**
-     * Warning that indicates an incorect video url.
-     */
-    _displayWarning: Function,
-
-    /**
      * Docks the toolbox.
      */
     _dockToolbox: Function,
 
     /**
-     * Is the video shared by the local user.
+     * Is the iframe shared by the local user.
      *
      * @private
      */
     _isOwner: boolean,
 
     /**
-     * The shared video owner id.
+     * The shared iframe owner id.
      */
     _ownerId: string,
 
     /**
-     * The video url.
+     * The iframe url.
      */
     _iFrameUrl: string,
-
-    /**
-     * The video id.
-     */
-    videoId: string
 }
 
 /**
- * Manager of shared video.
+ * Manager of shared iframe.
  */
 class IFrameManager extends React.PureComponent<Props> {
 
     /**
-     * Initializes a new instance of AbstractVideoManager.
+     * Initializes a new instance of IFrameManager.
      *
      * @returns {void}
      */
@@ -125,17 +113,7 @@ class IFrameManager extends React.PureComponent<Props> {
     }
 
     /**
-     * Handle video error.
-     *
-     * @returns {void}
-     */
-    onError() {
-        logger.error('Error in the generic iframe');
-        this.props._displayWarning();
-    }
-
-    /**
-     * Disposes current video player.
+     * Disposes current iframe player.
      */
     dispose: () => void;
 
@@ -185,11 +163,6 @@ function _mapStateToProps(state: Object): $Shape<Props> {
  */
 function _mapDispatchToProps(dispatch: Function): $Shape<Props> {
     return {
-        _displayWarning: () => {
-            dispatch(showWarningNotification({
-                titleKey: 'dialog.shareVideoLinkError'
-            }, NOTIFICATION_TIMEOUT_TYPE.LONG));
-        },
         _dockToolbox: value => {
             dispatch(dockToolbox(value));
         }
