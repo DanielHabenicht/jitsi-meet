@@ -38,6 +38,11 @@ type Props = {
      * The shared iframe url.
      */
     iFrameUrl: string,
+
+    /**
+     * Decides if the shared iframe should be visible.
+     */
+     visible: string,
 }
 
 /** .
@@ -84,6 +89,24 @@ class SharedIFrame extends Component<Props> {
     }
 
     /**
+     * Computes the styles of the SharedIFrame Component
+     *
+     * @returns {{
+     *  display: string,
+     *  height: number,
+     *  width: number
+     * }}
+     */
+    getStyles() {
+        const { visible } = this.props;
+
+        return {
+            display: visible ? 'block' : 'none',
+            ...this.getDimensions()
+        };
+    }
+
+    /**
      * Implements React's {@link Component#render()}.
      *
      * @inheritdoc
@@ -95,7 +118,7 @@ class SharedIFrame extends Component<Props> {
         return (
             <div
                 id = 'sharedIFrame'
-                style = { this.getDimensions() }>
+                style = { this.getStyles() }>
                 <IFrameManager
                     iFrameUrl = { iFrameUrl } />
             </div>

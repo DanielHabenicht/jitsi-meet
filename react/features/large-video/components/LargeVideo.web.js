@@ -152,7 +152,7 @@ class LargeVideo extends Component<Props> {
                 ref = { this._containerRef }
                 style = { style }>
                 { renderSharedVideo && <SharedVideo /> }
-                { renderSharedIFrame && <SharedIFrame /> }
+                <SharedIFrame visible = { renderSharedIFrame }/>
 
                 <div id = 'etherpad' />
 
