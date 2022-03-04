@@ -1125,7 +1125,9 @@ var config = {
     //  - {room} - The room id
     //  - {lang} - The ISO Language tag
     //
+    // TODO: rename to sharedIFrame
     // genericIFrameTemplateUrl: 'https://example.com/link/to/your/iframe/app/{room}?lang={lang}',
+    // sharedIFrameName: 'Whiteboard',
 
     // List of undocumented settings used in jitsi-meet
     /**

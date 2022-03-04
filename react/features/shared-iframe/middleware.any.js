@@ -33,6 +33,7 @@ MiddlewareRegistry.register(store => next => action => {
     const localParticipantId = getLocalParticipant(state)?.id;
     const { iFrameUrl, isSharing, ownerId, volume } = action;
     const { ownerId: stateOwnerId, iFrameUrl: stateiFrameUrl } = state['features/shared-iframe'];
+    const { sharedIFrameName } = state['features/base/config'];
 
     switch (action.type) {
     case CONFERENCE_LEFT:
@@ -48,26 +49,30 @@ MiddlewareRegistry.register(store => next => action => {
         break;
     case SET_SHARED_IFRAME_STATUS:
         if (localParticipantId === ownerId) {
-            sendShareIFrameCommand({
-                conference,
-                localParticipantId,
-                isSharing,
-                id: iFrameUrl,
-                volume
-            });
+            sendShareIFrameCommand(
+                sharedIFrameName || SHARED_IFRAME,
+                {
+                    conference,
+                    localParticipantId,
+                    isSharing,
+                    id: iFrameUrl,
+                    volume
+                });
         }
         break;
     case RESET_SHARED_IFRAME_STATUS:
         if (localParticipantId === stateOwnerId) {
-            sendShareIFrameCommand({
-                conference,
-                id: stateiFrameUrl,
-                localParticipantId,
-                muted: true,
-                isSharing: false,
-                time: 0,
-                volume: 0
-            });
+            sendShareIFrameCommand(
+                sharedIFrameName || SHARED_IFRAME,
+                {
+                    conference,
+                    id: stateiFrameUrl,
+                    localParticipantId,
+                    muted: true,
+                    isSharing: false,
+                    time: 0,
+                    volume: 0
+                });
         }
         break;
     }
@@ -84,9 +89,12 @@ StateListenerRegistry.register(
     state => getCurrentConference(state),
     (conference, store, previousConference) => {
         if (conference && conference !== previousConference) {
-            conference.addCommandListener(SHARED_IFRAME,
+            const { dispatch, getState } = store;
+            const state = getState();
+            const { sharedIFrameName } = state['features/base/config'];
+
+            conference.addCommandListener(sharedIFrameName || SHARED_IFRAME,
                 ({ value, attributes }) => {
-                    const { dispatch, getState } = store;
                     const { from } = attributes;
                     const localParticipantId = getLocalParticipant(getState()).id;
 
@@ -147,14 +155,15 @@ function handleSharingIFrame(store, iFrameUrl, { isSharing, from }, conference) 
 /**
  * Sends SHARED_IFRAME command.
  *
+ * @param {string} commandName - The name of the IFrame
  * @param {string} id - The id of the video.
  * @param {string} isSharing - The status of the shared iframe.
  * @param {JitsiConference} conference - The current conference.
  * @param {string} localParticipantId - The id of the local participant.
  * @returns {void}
  */
-function sendShareIFrameCommand({ id, isSharing, conference, localParticipantId }) {
-    conference.sendCommandOnce(SHARED_IFRAME, {
+function sendShareIFrameCommand(commandName, { id, isSharing, conference, localParticipantId }) {
+    conference.sendCommandOnce(commandName, {
         value: id,
         attributes: {
             from: localParticipantId,
