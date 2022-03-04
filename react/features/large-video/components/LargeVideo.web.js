@@ -145,6 +145,10 @@ class LargeVideo extends Component<Props> {
         const renderSharedIFrame = _isFakeParticipant
             && _participantName === IFRAME_PLAYER_PARTICIPANT_NAME;
 
+        const speakerStyle = {
+            display: renderSharedIFrame || renderSharedVideo ? 'none' : 'block'
+        };
+
         return (
             <div
                 className = { className }
@@ -152,21 +156,24 @@ class LargeVideo extends Component<Props> {
                 ref = { this._containerRef }
                 style = { style }>
                 { renderSharedVideo && <SharedVideo /> }
-                <SharedIFrame visible = { renderSharedIFrame }/>
+                <SharedIFrame visible = { renderSharedIFrame } />
 
                 <div id = 'etherpad' />
 
-                <Watermarks />
+                { !renderSharedIFrame && <Watermarks /> }
 
-                { !renderSharedIFrame && !renderSharedVideo && <div
+                <div
                     id = 'dominantSpeaker'
-                    onTouchEnd = { this._onDoubleTap }>
+                    onTouchEnd = { this._onDoubleTap }
+                    style = { speakerStyle }>
                     <div className = 'dynamic-shadow' />
                     <div id = 'dominantSpeakerAvatarContainer' />
-                </div>}
+                </div>
                 <div id = 'remotePresenceMessage' />
                 <span id = 'remoteConnectionMessage' />
-                <div id = 'largeVideoElementsContainer'>
+                <div
+                    id = 'largeVideoElementsContainer'
+                    style = { speakerStyle }>
                     <div id = 'largeVideoBackgroundContainer' />
 
                     {/*
@@ -181,7 +188,8 @@ class LargeVideo extends Component<Props> {
                         id = 'largeVideoWrapper'
                         onTouchEnd = { this._onDoubleTap }
                         ref = { this._wrapperRef }
-                        role = 'figure' >
+                        role = 'figure'
+                        style = { speakerStyle } >
                         <video
                             autoPlay = { !_noAutoPlayVideo }
                             id = 'largeVideo'
