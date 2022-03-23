@@ -84,7 +84,7 @@ import { isScreenAudioSupported } from '../../react/features/screen-share';
 import { startScreenShareFlow, startAudioScreenShareFlow } from '../../react/features/screen-share/actions';
 import { toggleScreenshotCaptureSummary } from '../../react/features/screenshot-capture';
 import { isScreenshotCaptureEnabled } from '../../react/features/screenshot-capture/functions';
-import { playSharedIFrame, stopSharedIFrame } from '../../react/features/shared-iframe/actions.any';
+import { toggleSharedIFrame, stopSharedIFrame } from '../../react/features/shared-iframe/actions.any';
 import { playSharedVideo, stopSharedVideo } from '../../react/features/shared-video/actions.any';
 import { extractYoutubeIdOrURL } from '../../react/features/shared-video/functions';
 import { toggleTileView, setTileView } from '../../react/features/video-layout';
@@ -441,25 +441,15 @@ function initCommands() {
             APP.store.dispatch(stopSharedVideo());
         },
 
-        'start-share-iframe': urltemplate => {
+        'toggle-share-iframe': () => {
             logger.debug('Share iframe command received');
-
-            // TODO: analytics?
-            // sendAnalytics(createApiEvent('share.iframe.start'));
-
-            // TODO: generate URL
-            const url = `https://test.de${urltemplate}`;
-
-            if (url) {
-                APP.store.dispatch(playSharedIFrame(url));
-            }
+            sendAnalytics(createApiEvent('share.iframe.toggle'));
+            APP.store.dispatch(toggleSharedIFrame());
         },
 
         'stop-share-iframe': () => {
             logger.debug('Share iframe command received');
-
-            // TODO: analytics?
-            // sendAnalytics(createApiEvent('share.iframe.stop'));
+            sendAnalytics(createApiEvent('share.iframe.stop'));
             APP.store.dispatch(stopSharedIFrame());
         },
 
