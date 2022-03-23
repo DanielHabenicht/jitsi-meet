@@ -36,17 +36,11 @@ export function isIFrameSharingActive(stateful: Object | Function): boolean {
 export function getGenericiFrameUrl(stateful: Function | Object) {
     const state = toState(stateful);
 
-    let { sharedIFrameTemplateUrl } = state['features/base/config'];
+    const { sharedIFrameTemplateUrl } = state['features/base/config'];
+    let iFrameUrl = sharedIFrameTemplateUrl;
 
     const { room } = state['features/base/conference'];
     const lang = i18next.language || DEFAULT_LANGUAGE;
-
-    if (!sharedIFrameTemplateUrl) {
-        // TODO: Check in prod
-        sharedIFrameTemplateUrl = 'https://wbo.ophir.dev/boards/{room}?lang={lang}';
-    }
-
-    let iFrameUrl = sharedIFrameTemplateUrl;
 
     iFrameUrl = iFrameUrl.replace('{room}', room);
     iFrameUrl = iFrameUrl.replace('{lang}', lang);
