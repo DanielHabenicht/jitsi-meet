@@ -16,7 +16,7 @@ import { Container, TintedView } from '../../react';
 import { connect } from '../../redux';
 import type { StyleType } from '../../styles';
 import { TestHint } from '../../testing/components';
-import { getTrackByMediaTypeAndParticipant, _disposeAndRemoveTracks } from '../../tracks';
+import { getTrackByMediaTypeAndParticipant } from '../../tracks';
 import { shouldRenderParticipantVideo, getParticipantById } from '../functions';
 
 import styles from './styles';
