@@ -21,6 +21,7 @@ import '../shared-iframe/middleware';
 import '../settings/middleware';
 import '../talk-while-muted/middleware';
 import '../virtual-background/middleware';
+import '../face-centering/middleware';
 import '../facial-recognition/middleware';
 
 import './middlewares.any';

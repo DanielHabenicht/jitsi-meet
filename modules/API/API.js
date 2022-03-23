@@ -39,7 +39,8 @@ import {
     raiseHand,
     isParticipantModerator,
     isLocalParticipantModerator,
-    hasRaisedHand
+    hasRaisedHand,
+    grantModerator
 } from '../../react/features/base/participants';
 import { updateSettings } from '../../react/features/base/settings';
 import { isToggleCameraEnabled, toggleCamera } from '../../react/features/base/tracks';
@@ -72,7 +73,7 @@ import {
     captureLargeVideoScreenshot,
     resizeLargeVideo
 } from '../../react/features/large-video/actions.web';
-import { toggleLobbyMode, setKnockingParticipantApproval } from '../../react/features/lobby/actions';
+import { toggleLobbyMode, answerKnockingParticipant } from '../../react/features/lobby/actions';
 import {
     close as closeParticipantsPane,
     open as openParticipantsPane
@@ -141,7 +142,7 @@ function initCommands() {
             APP.store.dispatch(createBreakoutRoom(name));
         },
         'answer-knocking-participant': (id, approved) => {
-            APP.store.dispatch(setKnockingParticipantApproval(id, approved));
+            APP.store.dispatch(answerKnockingParticipant(id, approved));
         },
         'approve-video': participantId => {
             if (!isLocalParticipantModerator(APP.store.getState())) {
@@ -164,6 +165,14 @@ function initCommands() {
                 return;
             }
             APP.store.dispatch(autoAssignToBreakoutRooms());
+        },
+        'grant-moderator': participantId => {
+            if (!isLocalParticipantModerator(APP.store.getState())) {
+                logger.error('Missing moderator rights to grant moderator right to another participant');
+
+                return;
+            }
+            APP.store.dispatch(grantModerator(participantId));
         },
         'display-name': displayName => {
             sendAnalytics(createApiEvent('display.name.changed'));

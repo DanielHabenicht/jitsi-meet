@@ -45,7 +45,7 @@ export default {
         flexDirection: 'row',
         flexGrow: 0,
         justifyContent: 'flex-end',
-        marginBottom: 5
+        margin: 6
     },
 
     /**
