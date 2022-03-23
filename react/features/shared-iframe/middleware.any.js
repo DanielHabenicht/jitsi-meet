@@ -127,8 +127,15 @@ function handleSharingIFrame(store, iFrameUrl, { isSharing, from }, conference) 
     const localParticipantId = getLocalParticipant(getState()).id;
 
     if (isSharing === 'true') {
-        // TODO: Add avatar url
-        const avatarURL = '';
+
+        const state = getState();
+
+        state['features/base/config'] = {
+            ...state['features/base/config'],
+            sharedIFrameAvatarUrl: 'images/sharedIFrameAvatar.svg'
+        };
+
+        const { sharedIFrameAvatarUrl: avatarURL } = state['features/base/config'];
 
         dispatch(participantJoined({
             conference,
