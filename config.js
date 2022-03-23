@@ -1127,6 +1127,7 @@ var config = {
     //
     // sharedIFrameTemplateUrl: 'https://example.com/link/to/your/iframe/app/{room}?lang={lang}',
     // sharedIFrameName: 'Whiteboard',
+    // sharedIFrameAvatarUrl: 'images/sharedIFrameAvatar.svg',
 
     // List of undocumented settings used in jitsi-meet
     /**
