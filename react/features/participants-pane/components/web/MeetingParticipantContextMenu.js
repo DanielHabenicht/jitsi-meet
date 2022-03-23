@@ -117,8 +117,6 @@ function _mapStateToProps(state, ownProps): Object {
     const { participantID, overflowDrawer, drawerParticipant } = ownProps;
     const { ownerId } = state['features/shared-video'];
 
-    // TODO
-    // const { ownerId } = state['features/shared-iframe'];
     const localParticipantId = getLocalParticipant(state).id;
 
     const participant = getParticipantByIdOrUndefined(state,
