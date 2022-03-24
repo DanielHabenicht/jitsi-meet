@@ -3,8 +3,10 @@
 import React, { Component } from 'react';
 import { Text, View } from 'react-native';
 
-import { SharedVideo } from '../../../shared-video/components/native';
 import { SharedIFrame } from '../../../shared-iframe/components';
+import { IFRAME_PLAYER_PARTICIPANT_NAME } from '../../../shared-iframe/constants';
+import { SharedVideo } from '../../../shared-video/components/native';
+import { VIDEO_PLAYER_PARTICIPANT_NAME, YOUTUBE_PLAYER_PARTICIPANT_NAME } from '../../../shared-video/constants';
 import { Avatar } from '../../avatar';
 import { translate } from '../../i18n';
 import { JitsiParticipantConnectionStatus } from '../../lib-jitsi-meet';
@@ -20,8 +22,6 @@ import { getTrackByMediaTypeAndParticipant } from '../../tracks';
 import { shouldRenderParticipantVideo, getParticipantById } from '../functions';
 
 import styles from './styles';
-import { IFRAME_PLAYER_PARTICIPANT_NAME } from '../../../shared-iframe/constants';
-import { VIDEO_PLAYER_PARTICIPANT_NAME, YOUTUBE_PLAYER_PARTICIPANT_NAME } from '../../../shared-video/constants';
 
 /**
  * The type of the React {@link Component} props of {@link ParticipantView}.

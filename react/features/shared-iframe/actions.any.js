@@ -50,7 +50,7 @@ export function setSharedIFrameStatus({ iFrameTemplateUrl, isSharing, ownerId })
  */
 export function showSharedIFrame() {
     return (dispatch, getState) => {
-        const state = getState()
+        const state = getState();
         const conference = getCurrentConference(state);
         const { sharedIFrameTemplateUrl } = state['features/base/config'];
 

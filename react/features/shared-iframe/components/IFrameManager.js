@@ -1,13 +1,11 @@
 /* @flow */
 /* eslint-disable no-invalid-this */
-import Logger from '@jitsi/logger';
 import React from 'react';
 
 import { sendAnalytics, createSharedIFrameEvent as createEvent } from '../../analytics';
 import { connect } from '../../base/redux';
 import { dockToolbox } from '../../toolbox/actions.web';
 
-const logger = Logger.getLogger(__filename);
 
 /**
  * The type of the React {@link PureComponent} props of {@link IFrameManager}.
@@ -21,7 +19,7 @@ export type Props = {
 
     /**
      * If the iframe is shared by the local user he is the owner.
-     * Passed in from the parent component
+     * Passed in from the parent component.
      */
     isOwner: boolean,
 
@@ -130,7 +128,7 @@ class IFrameManager extends React.PureComponent<Props> {
  * @param {Object} state - The Redux state.
  * @returns {Props}
  */
-function _mapStateToProps(state: Object): $Shape<Props> {
+function _mapStateToProps(): $Shape<Props> {
     return { };
 }
 

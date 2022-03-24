@@ -20,7 +20,7 @@ ReducerRegistry.register('features/shared-iframe', (state = initialState, action
             ...state,
             ownerId,
             isSharing,
-            iFrameTemplateUrl,
+            iFrameTemplateUrl
         };
     default:
         return state;
