@@ -3,11 +3,11 @@
 import React, { Component } from 'react';
 
 import Filmstrip from '../../../../modules/UI/videolayout/Filmstrip';
+import { i18next, DEFAULT_LANGUAGE } from '../../base/i18n';
 import { getLocalParticipant } from '../../base/participants';
 import { connect } from '../../base/redux';
 import { getToolboxHeight } from '../../toolbox/functions.web';
 import { getGenericiFrameUrl } from '../functions';
-import { i18next, DEFAULT_LANGUAGE } from '../../base/i18n';
 
 import IFrameManager from './IFrameManager';
 
@@ -38,21 +38,21 @@ type Props = {
 
     /**
      * The shared iframe template url.
-     * 
+     *
      * @private
      */
     _iFrameTemplateUrl: string,
 
     /**
      * The current users room.
-     * 
+     *
      * @private
      */
     _room: string,
 
      /**
      * The current users language setting.
-     * 
+     *
      * @private
      */
      _lang: string,
@@ -107,7 +107,7 @@ class SharedIFrame extends Component<Props> {
     }
 
     /**
-     * Computes the styles of the SharedIFrame Component
+     * Computes the styles of the SharedIFrame Component.
      *
      * @returns {{
      *  display: string,
@@ -131,16 +131,15 @@ class SharedIFrame extends Component<Props> {
      * @returns {React$Element}
      */
     render() {
-        const { isOwner, _iFrameTemplateUrl, _room, _lang  } = this.props;
+        const { isOwner, _iFrameTemplateUrl, _room, _lang } = this.props;
 
         return (
             <div
                 id = 'sharedIFrame'
                 style = { this.getStyles() }>
                 <IFrameManager
-                    iFrameUrl = { getGenericiFrameUrl(_iFrameTemplateUrl, _room, _lang) } 
-                    isOwner = { isOwner } 
-                    />
+                    iFrameUrl = { getGenericiFrameUrl(_iFrameTemplateUrl, _room, _lang) }
+                    isOwner = { isOwner } />
             </div>
         );
     }
@@ -155,7 +154,7 @@ class SharedIFrame extends Component<Props> {
  * @returns {Props}
  */
 function _mapStateToProps(state) {
-    const { ownerId, iFrameTemplateUrl} = state['features/shared-iframe'];
+    const { ownerId, iFrameTemplateUrl } = state['features/shared-iframe'];
     const { clientHeight, clientWidth } = state['features/base/responsive-ui'];
     const { visible } = state['features/filmstrip'];
 

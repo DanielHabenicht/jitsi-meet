@@ -8,6 +8,7 @@ import { Watermarks } from '../../base/react';
 import { connect } from '../../base/redux';
 import { setColorAlpha } from '../../base/util';
 import { FILMSTRIP_BREAKPOINT, isFilmstripResizable } from '../../filmstrip';
+import { getVerticalViewMaxWidth } from '../../filmstrip/functions.web';
 import { SharedIFrame } from '../../shared-iframe/components';
 import { IFRAME_PLAYER_PARTICIPANT_NAME } from '../../shared-iframe/constants';
 import { SharedVideo } from '../../shared-video/components/web';

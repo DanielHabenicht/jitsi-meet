@@ -43,7 +43,7 @@ class SharedIFrameButton extends AbstractButton<Props, *> {
      */
     get tooltip() {
         if (this._isDisabled()) {
-            return 'toolbar.disabledSharedIFrame'
+            return 'toolbar.disabledSharedIFrame';
         }
         if (this._isToggled()) {
             return 'toolbar.stopSharedIFrame';

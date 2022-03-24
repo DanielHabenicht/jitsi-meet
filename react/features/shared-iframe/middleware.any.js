@@ -34,8 +34,6 @@ MiddlewareRegistry.register(store => next => action => {
     const { iFrameTemplateUrl, isSharing, ownerId } = action;
     const { ownerId: stateOwnerId, iFrameTemplateUrl: stateiFrameUrl } = state['features/shared-iframe'];
 
-
-
     switch (action.type) {
     case CONFERENCE_LEFT:
         dispatch(resetSharedIFrameStatus());
@@ -151,7 +149,7 @@ function handleSharingIFrame(store, iFrameTemplateUrl, { isSharing, from }, conf
 /**
  * Sends SHARED_IFRAME command.
  *
- * @param {string} commandName - The name of the IFrame
+ * @param {string} commandName - The name of the IFrame.
  * @param {string} id - The id of the video.
  * @param {string} isSharing - The status of the shared iframe.
  * @param {JitsiConference} conference - The current conference.
