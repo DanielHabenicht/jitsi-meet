@@ -15,10 +15,12 @@ import { IFRAME_PLAYER_PARTICIPANT_NAME } from './constants';
 export function isIFrameSharingActive(stateful: Object | Function): boolean {
 
     let isIFrameActive = false;
+    const state = toState(stateful);
+    const { sharedIFrameName } = state['features/base/config'];
 
     // eslint-disable-next-line no-unused-vars
     for (const [ id, p ] of getFakeParticipants(stateful)) {
-        if (p.name === IFRAME_PLAYER_PARTICIPANT_NAME) {
+        if (p.name === sharedIFrameName || p.name === IFRAME_PLAYER_PARTICIPANT_NAME) {
             isIFrameActive = true;
             break;
         }
