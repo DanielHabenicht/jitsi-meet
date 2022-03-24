@@ -1033,6 +1033,7 @@
         "closeChat": "Close chat",
         "closeReactionsMenu": "Close reactions menu",
         "disableReactionSounds": "You can disable reaction sounds for this meeting",
+        "disabledSharedIFrame": "Someone else is already sharing.",
         "documentClose": "Close shared document",
         "documentOpen": "Open shared document",
         "download": "Download our apps",
