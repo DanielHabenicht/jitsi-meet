@@ -42,6 +42,9 @@ class SharedIFrameButton extends AbstractButton<Props, *> {
      * Dynamically retrieves tooltip based on sharing state.
      */
     get tooltip() {
+        if (this._isDisabled()) {
+            return 'toolbar.disabledSharedIFrame'
+        }
         if (this._isToggled()) {
             return 'toolbar.stopSharedIFrame';
         }
