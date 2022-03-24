@@ -31,8 +31,9 @@ MiddlewareRegistry.register(store => next => action => {
     const state = getState();
     const conference = getCurrentConference(state);
     const localParticipantId = getLocalParticipant(state)?.id;
-    const { iFrameUrl, isSharing, ownerId } = action;
-    const { ownerId: stateOwnerId, iFrameUrl: stateiFrameUrl } = state['features/shared-iframe'];
+    const { iFrameTemplateUrl, isSharing, ownerId } = action;
+    const { ownerId: stateOwnerId, iFrameTemplateUrl: stateiFrameUrl } = state['features/shared-iframe'];
+
 
 
     switch (action.type) {
@@ -55,7 +56,7 @@ MiddlewareRegistry.register(store => next => action => {
                     conference,
                     localParticipantId,
                     isSharing,
-                    id: iFrameUrl
+                    id: iFrameTemplateUrl
                 });
         }
         break;
@@ -67,7 +68,6 @@ MiddlewareRegistry.register(store => next => action => {
                     conference,
                     id: stateiFrameUrl,
                     localParticipantId,
-                    muted: true,
                     isSharing: false
                 });
         }
@@ -112,12 +112,12 @@ StateListenerRegistry.register(
  * Dispatches participantJoined event and, if necessary, pins it.
  *
  * @param {Store} store - The redux store.
- * @param {string} iFrameUrl - The id of the iframe to the shared.
+ * @param {string} iFrameTemplateUrl - The id of the iframe to the shared.
  * @param {Object} attributes - The attributes received from the share iframe command.
  * @param {JitsiConference} conference - The current conference.
  * @returns {void}
  */
-function handleSharingIFrame(store, iFrameUrl, { isSharing, from }, conference) {
+function handleSharingIFrame(store, iFrameTemplateUrl, { isSharing, from }, conference) {
     const { dispatch, getState } = store;
     const localParticipantId = getLocalParticipant(getState()).id;
 
@@ -128,20 +128,20 @@ function handleSharingIFrame(store, iFrameUrl, { isSharing, from }, conference) 
 
         dispatch(participantJoined({
             conference,
-            id: iFrameUrl,
+            id: iFrameTemplateUrl,
             isFakeParticipant: true,
             avatarURL,
             name: sharedIFrameName || IFRAME_PLAYER_PARTICIPANT_NAME
         }));
 
-        dispatch(pinParticipant(iFrameUrl));
+        dispatch(pinParticipant(iFrameTemplateUrl));
     }
 
     if (localParticipantId !== from) {
         dispatch(setSharedIFrameStatus({
             ownerId: from,
             isSharing,
-            iFrameUrl
+            iFrameTemplateUrl
         }));
     }
 }

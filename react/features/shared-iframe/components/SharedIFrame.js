@@ -6,6 +6,8 @@ import Filmstrip from '../../../../modules/UI/videolayout/Filmstrip';
 import { getLocalParticipant } from '../../base/participants';
 import { connect } from '../../base/redux';
 import { getToolboxHeight } from '../../toolbox/functions.web';
+import { getGenericiFrameUrl } from '../functions';
+import { i18next, DEFAULT_LANGUAGE } from '../../base/i18n';
 
 import IFrameManager from './IFrameManager';
 
@@ -35,9 +37,25 @@ type Props = {
     isOwner: boolean,
 
     /**
-     * The shared iframe url.
+     * The shared iframe template url.
+     * 
+     * @private
      */
-    iFrameUrl: string,
+    _iFrameTemplateUrl: string,
+
+    /**
+     * The current users room.
+     * 
+     * @private
+     */
+    _room: string,
+
+     /**
+     * The current users language setting.
+     * 
+     * @private
+     */
+     _lang: string,
 
     /**
      * Decides if the shared iframe should be visible.
@@ -113,14 +131,16 @@ class SharedIFrame extends Component<Props> {
      * @returns {React$Element}
      */
     render() {
-        const { iFrameUrl } = this.props;
+        const { isOwner, _iFrameTemplateUrl, _room, _lang  } = this.props;
 
         return (
             <div
                 id = 'sharedIFrame'
                 style = { this.getStyles() }>
                 <IFrameManager
-                    iFrameUrl = { iFrameUrl } />
+                    iFrameUrl = { getGenericiFrameUrl(_iFrameTemplateUrl, _room, _lang) } 
+                    isOwner = { isOwner } 
+                    />
             </div>
         );
     }
@@ -135,18 +155,23 @@ class SharedIFrame extends Component<Props> {
  * @returns {Props}
  */
 function _mapStateToProps(state) {
-    const { ownerId, iFrameUrl } = state['features/shared-iframe'];
+    const { ownerId, iFrameTemplateUrl} = state['features/shared-iframe'];
     const { clientHeight, clientWidth } = state['features/base/responsive-ui'];
     const { visible } = state['features/filmstrip'];
 
     const localParticipant = getLocalParticipant(state);
+
+    const { room } = state['features/base/conference'];
+    const lang = i18next.language || DEFAULT_LANGUAGE;
 
     return {
         clientHeight,
         clientWidth,
         filmstripVisible: visible,
         isOwner: ownerId === localParticipant?.id,
-        iFrameUrl
+        _iFrameTemplateUrl: iFrameTemplateUrl,
+        _room: room,
+        _lang: lang
     };
 }
 

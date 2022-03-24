@@ -4,8 +4,6 @@ import Logger from '@jitsi/logger';
 import React from 'react';
 
 import { sendAnalytics, createSharedIFrameEvent as createEvent } from '../../analytics';
-import { getCurrentConference } from '../../base/conference';
-import { getLocalParticipant } from '../../base/participants';
 import { connect } from '../../base/redux';
 import { dockToolbox } from '../../toolbox/actions.web';
 
@@ -17,31 +15,20 @@ const logger = Logger.getLogger(__filename);
 export type Props = {
 
     /**
-     * The current coference.
-     */
-    _conference: Object,
-
-    /**
      * Docks the toolbox.
      */
     _dockToolbox: Function,
 
     /**
-     * Is the iframe shared by the local user.
-     *
-     * @private
+     * If the iframe is shared by the local user he is the owner.
+     * Passed in from the parent component
      */
-    _isOwner: boolean,
+    isOwner: boolean,
 
     /**
-     * The shared iframe owner id.
+     * The iframe url passed in from the parent component.
      */
-    _ownerId: string,
-
-    /**
-     * The iframe url.
-     */
-    _iFrameUrl: string,
+    iFrameUrl: string,
 }
 
 /**
@@ -75,9 +62,9 @@ class IFrameManager extends React.PureComponent<Props> {
      * @inheritdoc
      */
     componentDidUpdate(prevProps: Props) {
-        const { _iFrameUrl } = this.props;
+        const { iFrameUrl } = this.props;
 
-        if (prevProps._iFrameUrl !== _iFrameUrl) {
+        if (prevProps.iFrameUrl !== iFrameUrl) {
             sendAnalytics(createEvent('started'));
         }
 
@@ -105,9 +92,9 @@ class IFrameManager extends React.PureComponent<Props> {
      * @returns {void}
      */
     processUpdatedProps() {
-        const { _isOwner } = this.props;
+        const { isOwner } = this.props;
 
-        if (_isOwner) {
+        if (isOwner) {
             return;
         }
     }
@@ -123,7 +110,7 @@ class IFrameManager extends React.PureComponent<Props> {
      * @inheritdoc
      */
     render() {
-        const { _iFrameUrl } = this.props;
+        const { iFrameUrl } = this.props;
 
         return (<iframe
             frameBorder = { 0 }
@@ -131,7 +118,7 @@ class IFrameManager extends React.PureComponent<Props> {
             id = 'sharedIFrame'
             ref = { this.iFrameRef }
             scrolling = 'no'
-            src = { _iFrameUrl }
+            src = { iFrameUrl }
             width = '100%' />);
     }
 }
@@ -144,15 +131,7 @@ class IFrameManager extends React.PureComponent<Props> {
  * @returns {Props}
  */
 function _mapStateToProps(state: Object): $Shape<Props> {
-    const { ownerId, iFrameUrl } = state['features/shared-iframe'];
-    const localParticipant = getLocalParticipant(state);
-
-    return {
-        _conference: getCurrentConference(state),
-        _isOwner: ownerId === localParticipant.id,
-        _ownerId: ownerId,
-        _iFrameUrl: iFrameUrl
-    };
+    return { };
 }
 
 /**
