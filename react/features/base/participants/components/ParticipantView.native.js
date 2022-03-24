@@ -52,6 +52,13 @@ type Props = {
     _participantName: string,
 
     /**
+     * The constant name of the shared-iframe participant.
+     *
+     * @private
+     */
+    _iFrameParticipantName: string,
+
+    /**
      * True if the video should be rendered, false otherwise.
      */
     _renderVideo: boolean,
@@ -193,6 +200,7 @@ class ParticipantView extends Component<Props> {
         const {
             _connectionStatus: connectionStatus,
             _isFakeParticipant,
+            _iFrameParticipantName,
             _participantName,
             _renderVideo: renderVideo,
             _videoTrack: videoTrack,
@@ -218,7 +226,7 @@ class ParticipantView extends Component<Props> {
                 || _participantName === YOUTUBE_PLAYER_PARTICIPANT_NAME)
             && !disableVideo;
         const renderSharedIFrame = _isFakeParticipant
-            && _participantName === IFRAME_PLAYER_PARTICIPANT_NAME && !disableVideo;
+            && _participantName === _iFrameParticipantName && !disableVideo;
 
         return (
             <Container
@@ -279,6 +287,7 @@ class ParticipantView extends Component<Props> {
 function _mapStateToProps(state, ownProps) {
     const { disableVideo, participantId } = ownProps;
     const participant = getParticipantById(state, participantId);
+    const { sharedIFrameName } = state['features/base/config'];
     let connectionStatus;
     let participantName;
 
@@ -288,6 +297,7 @@ function _mapStateToProps(state, ownProps) {
                 || JitsiParticipantConnectionStatus.ACTIVE,
         _isFakeParticipant: participant && participant.isFakeParticipant,
         _participantName: participantName,
+        _iFrameParticipantName: sharedIFrameName || IFRAME_PLAYER_PARTICIPANT_NAME,
         _renderVideo: shouldRenderParticipantVideo(state, participantId) && !disableVideo,
         _videoTrack:
             getTrackByMediaTypeAndParticipant(

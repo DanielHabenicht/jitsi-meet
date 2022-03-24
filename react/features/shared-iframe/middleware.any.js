@@ -31,9 +31,9 @@ MiddlewareRegistry.register(store => next => action => {
     const state = getState();
     const conference = getCurrentConference(state);
     const localParticipantId = getLocalParticipant(state)?.id;
-    const { iFrameUrl, isSharing, ownerId, volume } = action;
+    const { iFrameUrl, isSharing, ownerId } = action;
     const { ownerId: stateOwnerId, iFrameUrl: stateiFrameUrl } = state['features/shared-iframe'];
-    const { sharedIFrameName } = state['features/base/config'];
+
 
     switch (action.type) {
     case CONFERENCE_LEFT:
@@ -50,28 +50,25 @@ MiddlewareRegistry.register(store => next => action => {
     case SET_SHARED_IFRAME_STATUS:
         if (localParticipantId === ownerId) {
             sendShareIFrameCommand(
-                sharedIFrameName || SHARED_IFRAME,
+                SHARED_IFRAME,
                 {
                     conference,
                     localParticipantId,
                     isSharing,
-                    id: iFrameUrl,
-                    volume
+                    id: iFrameUrl
                 });
         }
         break;
     case RESET_SHARED_IFRAME_STATUS:
         if (localParticipantId === stateOwnerId) {
             sendShareIFrameCommand(
-                sharedIFrameName || SHARED_IFRAME,
+                SHARED_IFRAME,
                 {
                     conference,
                     id: stateiFrameUrl,
                     localParticipantId,
                     muted: true,
-                    isSharing: false,
-                    time: 0,
-                    volume: 0
+                    isSharing: false
                 });
         }
         break;
@@ -90,10 +87,8 @@ StateListenerRegistry.register(
     (conference, store, previousConference) => {
         if (conference && conference !== previousConference) {
             const { dispatch, getState } = store;
-            const state = getState();
-            const { sharedIFrameName } = state['features/base/config'];
 
-            conference.addCommandListener(sharedIFrameName || SHARED_IFRAME,
+            conference.addCommandListener(SHARED_IFRAME,
                 ({ value, attributes }) => {
                     const { from } = attributes;
                     const localParticipantId = getLocalParticipant(getState()).id;
@@ -129,14 +124,14 @@ function handleSharingIFrame(store, iFrameUrl, { isSharing, from }, conference) 
     if (isSharing === 'true') {
 
         const state = getState();
-        const { sharedIFrameAvatarUrl: avatarURL } = state['features/base/config'];
+        const { sharedIFrameAvatarUrl: avatarURL, sharedIFrameName } = state['features/base/config'];
 
         dispatch(participantJoined({
             conference,
             id: iFrameUrl,
             isFakeParticipant: true,
             avatarURL,
-            name: IFRAME_PLAYER_PARTICIPANT_NAME
+            name: sharedIFrameName || IFRAME_PLAYER_PARTICIPANT_NAME
         }));
 
         dispatch(pinParticipant(iFrameUrl));

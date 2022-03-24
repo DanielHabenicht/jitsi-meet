@@ -87,6 +87,13 @@ type Props = {
      _participantName: string,
 
     /**
+     * The constant name of the shared-iframe participant.
+     *
+     * @private
+     */
+     _iFrameParticipantName: string,
+
+    /**
      * The Redux dispatch function.
      */
     dispatch: Function,
@@ -146,6 +153,7 @@ class LargeVideo extends Component<Props> {
             _noAutoPlayVideo,
             _isFakeParticipant,
             _participantName,
+            _iFrameParticipantName,
             _showDominantSpeakerBadge
         } = this.props;
         const style = this._getCustomSyles();
@@ -156,7 +164,7 @@ class LargeVideo extends Component<Props> {
                 _participantName === VIDEO_PLAYER_PARTICIPANT_NAME
                 || _participantName === YOUTUBE_PLAYER_PARTICIPANT_NAME);
         const renderSharedIFrame = _isFakeParticipant
-            && _participantName === IFRAME_PLAYER_PARTICIPANT_NAME;
+            && _participantName === _iFrameParticipantName;
 
         const speakerStyle = {
             display: renderSharedIFrame || renderSharedVideo ? 'none' : 'block'
@@ -330,6 +338,7 @@ function _mapStateToProps(state) {
     const { participantId } = state['features/large-video'];
     const participant = getParticipantById(state, participantId);
     const { hideDominantSpeakerBadge } = state['features/base/config'];
+    const { sharedIFrameName } = state['features/base/config'];
 
     return {
         _backgroundAlpha: state['features/base/config'].backgroundAlpha,
@@ -342,6 +351,7 @@ function _mapStateToProps(state) {
         _verticalFilmstripWidth: verticalFilmstripWidth.current,
         _visibleFilmstrip: visible,
         _participantName: participant && participant.name,
+        _iFrameParticipantName: sharedIFrameName || IFRAME_PLAYER_PARTICIPANT_NAME,
         _isFakeParticipant: participant && participant.isFakeParticipant,
         _verticalViewMaxWidth: getVerticalViewMaxWidth(state)
     };

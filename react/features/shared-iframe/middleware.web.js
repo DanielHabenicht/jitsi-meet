@@ -18,9 +18,8 @@ StateListenerRegistry.register(
     (conference, store, previousConference) => {
         if (conference && conference !== previousConference) {
             const { dispatch, getState } = store;
-            const state = getState();
 
-            conference.addCommandListener(state['features/shared-iframe'].sharedIFrameName || SHARED_IFRAME,
+            conference.addCommandListener(SHARED_IFRAME,
                 ({ attributes }) => {
                     const { from } = attributes;
                     const localParticipantId = getLocalParticipant(getState()).id;
