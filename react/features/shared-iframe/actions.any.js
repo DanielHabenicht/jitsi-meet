@@ -2,7 +2,6 @@ import { getCurrentConference } from '../base/conference';
 import { getLocalParticipant } from '../base/participants';
 
 import { RESET_SHARED_IFRAME_STATUS, SET_SHARED_IFRAME_STATUS } from './actionTypes';
-import { getGenericiFrameUrl } from './functions';
 
 /**
  * Resets the status of the shared iframe.
@@ -21,29 +20,23 @@ export function resetSharedIFrameStatus() {
  * Updates the current known status of the shared iframe.
  *
  * @param {Object} options - The options.
- * @param {boolean} options.muted - Is iframe muted.
  * @param {boolean} options.ownerId - Participant ID of the owner.
  * @param {boolean} options.isSharing - Sharing status.
- * @param {boolean} options.time - Playback timestamp.
- * @param {boolean} options.iFrameUrl - URL of the shared iframe.
+ * @param {boolean} options.iFrameTemplateUrl - URL of the shared iframe.
  *
  * @returns {{
  *     type: SET_SHARED_IFRAME_STATUS,
- *     muted: boolean,
  *     ownerId: string,
  *     isSharing: boolean,
- *     time: number,
- *     iFrameUrl: string,
+ *     iFrameTemplateUrl: string,
  * }}
  */
-export function setSharedIFrameStatus({ iFrameUrl, isSharing, time, ownerId, muted }) {
+export function setSharedIFrameStatus({ iFrameTemplateUrl, isSharing, ownerId }) {
     return {
         type: SET_SHARED_IFRAME_STATUS,
         ownerId,
         isSharing,
-        time,
-        iFrameUrl,
-        muted
+        iFrameTemplateUrl
     };
 }
 
@@ -51,21 +44,22 @@ export function setSharedIFrameStatus({ iFrameUrl, isSharing, time, ownerId, mut
  *
  * Shows the shared IFrame for all participants.
  *
- * @param {string} iFrameUrl - The iframe url to be played.
+ * @param {string} iFrameTemplateUrl - The iframe url to be played.
  *
  * @returns {Function}
  */
-export function showSharedIFrame(iFrameUrl) {
+export function showSharedIFrame() {
     return (dispatch, getState) => {
-        const conference = getCurrentConference(getState());
+        const state = getState()
+        const conference = getCurrentConference(state);
+        const { sharedIFrameTemplateUrl } = state['features/base/config'];
 
         if (conference) {
-            const localParticipant = getLocalParticipant(getState());
+            const localParticipant = getLocalParticipant(state);
 
             dispatch(setSharedIFrameStatus({
-                iFrameUrl,
+                iFrameTemplateUrl: sharedIFrameTemplateUrl,
                 isSharing: 'true',
-                time: 0,
                 ownerId: localParticipant.id
             }));
         }
@@ -104,7 +98,7 @@ export function toggleSharedIFrame() {
         if (isSharing === 'true') {
             dispatch(stopSharedIFrame());
         } else {
-            dispatch(showSharedIFrame(getGenericiFrameUrl(state)));
+            dispatch(showSharedIFrame());
         }
     };
 }

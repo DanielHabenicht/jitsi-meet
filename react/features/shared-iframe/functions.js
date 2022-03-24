@@ -1,5 +1,4 @@
 // @flow
-import { i18next, DEFAULT_LANGUAGE } from '../base/i18n';
 import { getFakeParticipants } from '../base/participants';
 import { toState } from '../base/redux';
 
@@ -30,20 +29,15 @@ export function isIFrameSharingActive(stateful: Object | Function): boolean {
 }
 
 /**
- * Retrieves the current genericIFrame URL and replaces the placeholder with data.
+ * Fills the templateURL by replacing the placeholders with data.
  *
- * @param {Function|Object} stateful - The redux store or {@code getState} function.
- * @returns {?string} - Current genericIFrame URL or undefined.
+ * @param {string} templateUrl - The templateUrl to be templated
+ * @param {string} room - The room value for the template.
+ * @param {string} lang - The language value for the template.
+ * @returns {string} - The iFrameURL or empty string.
  */
-export function getGenericiFrameUrl(stateful: Function | Object) {
-    const state = toState(stateful);
-
-    const { sharedIFrameTemplateUrl } = state['features/base/config'];
-    let iFrameUrl = sharedIFrameTemplateUrl;
-
-    const { room } = state['features/base/conference'];
-    const lang = i18next.language || DEFAULT_LANGUAGE;
-
+export function getGenericiFrameUrl(templateUrl, room, lang) {
+    let iFrameUrl = templateUrl || '';
     iFrameUrl = iFrameUrl.replace('{room}', room);
     iFrameUrl = iFrameUrl.replace('{lang}', lang);
 
