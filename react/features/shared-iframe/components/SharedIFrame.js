@@ -69,7 +69,7 @@ type Props = {
  *
  * @augments Component
  */
-class SharedIFrame extends Component<Props> {
+class SharedIFrame extends React.PureComponent<Props> {
     /**
      * Computes the width and the height of the component.
      *

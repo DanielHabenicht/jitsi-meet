@@ -120,7 +120,6 @@ function handleSharingIFrame(store, iFrameTemplateUrl, { isSharing, from }, conf
     const localParticipantId = getLocalParticipant(getState()).id;
 
     if (isSharing === 'true') {
-
         const state = getState();
         const { sharedIFrameAvatarUrl: avatarURL, sharedIFrameName } = state['features/base/config'];
 
