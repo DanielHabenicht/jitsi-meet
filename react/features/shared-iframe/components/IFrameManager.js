@@ -1,5 +1,3 @@
-/* @flow */
-/* eslint-disable no-invalid-this */
 import React from 'react';
 
 import { sendAnalytics, createSharedIFrameEvent as createEvent } from '../../analytics';
@@ -123,16 +121,6 @@ class IFrameManager extends React.PureComponent<Props> {
 
 
 /**
- * Maps part of the Redux store to the props of this component.
- *
- * @param {Object} state - The Redux state.
- * @returns {Props}
- */
-function _mapStateToProps(): $Shape<Props> {
-    return { };
-}
-
-/**
  * Maps part of the props of this component to Redux actions.
  *
  * @param {Function} dispatch - The Redux dispatch function.
@@ -146,4 +134,4 @@ function _mapDispatchToProps(dispatch: Function): $Shape<Props> {
     };
 }
 
-export default connect(_mapStateToProps, _mapDispatchToProps)(IFrameManager);
+export default connect(_mapDispatchToProps)(IFrameManager);
