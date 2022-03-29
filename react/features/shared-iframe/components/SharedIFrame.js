@@ -1,6 +1,6 @@
 // @flow
 
-import React, { Component } from 'react';
+import React from 'react';
 
 import Filmstrip from '../../../../modules/UI/videolayout/Filmstrip';
 import { i18next, DEFAULT_LANGUAGE } from '../../base/i18n';

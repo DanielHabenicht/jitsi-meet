@@ -1,4 +1,3 @@
-// @flow
 import { getFakeParticipants } from '../base/participants';
 import { toState } from '../base/redux';
 
