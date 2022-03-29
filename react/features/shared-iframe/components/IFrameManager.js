@@ -1,3 +1,4 @@
+/* @flow */
 import React from 'react';
 
 import { sendAnalytics, createSharedIFrameEvent as createEvent } from '../../analytics';
@@ -134,4 +135,6 @@ function _mapDispatchToProps(dispatch: Function): $Shape<Props> {
     };
 }
 
-export default connect(_mapDispatchToProps)(IFrameManager);
+export default connect(() => {
+    // TODO: Refactor to use dispatch directly (also remove the flow statement)
+}, _mapDispatchToProps)(IFrameManager);
