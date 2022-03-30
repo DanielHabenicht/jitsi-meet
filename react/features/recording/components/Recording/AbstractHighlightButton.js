@@ -15,6 +15,7 @@ import {
 import { highlightMeetingMoment } from '../../actions.any';
 import { StartRecordingDialog } from '../../components';
 import { PROMPT_RECORDING_NOTIFICATION_ID } from '../../constants';
+import { getRecordButtonProps } from '../../functions';
 
 export type Props = {
 
@@ -44,7 +45,7 @@ export type Props = {
  */
 export default class AbstractHighlightButton<P: Props> extends Component<P> {
     /**
-     * Initializes a new AbstractVideoTrack instance.
+     * Initializes a new AbstractHighlightButton instance.
      *
      * @param {Object} props - The read-only properties with which the new
      * instance is to be initialized.
@@ -106,9 +107,14 @@ export function _abstractMapStateToProps(state: Object) {
     const isButtonDisabled = isHighlightMeetingMomentDisabled(state);
     const { webhookProxyUrl } = state['features/base/config'];
 
+    const {
+        disabled: isRecordButtonDisabled,
+        visible: isRecordButtonVisible
+    } = getRecordButtonProps(state);
+
     return {
         _disabled: !isRecordingRunning,
         _isHighlightInProgress: isButtonDisabled,
-        _visible: Boolean(webhookProxyUrl)
+        _visible: isRecordButtonVisible && !isRecordButtonDisabled && Boolean(webhookProxyUrl)
     };
 }

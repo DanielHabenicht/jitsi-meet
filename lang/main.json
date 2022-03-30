@@ -556,6 +556,7 @@
         "errorMissingPassword": "Please enter the meeting password",
         "invalidPassword": "Invalid password",
         "joinRejectedMessage": "Your join request was rejected by a moderator.",
+        "joinRejectedTitle": "Join request rejected.",
         "joinTitle": "Join Meeting",
         "joinWithPasswordMessage": "Trying to join with password, please wait...",
         "joiningMessage": "You'll join the meeting as soon as someone accepts your request",
@@ -628,6 +629,7 @@
         "displayNotifications": "Display notifications for",
         "focus": "Conference focus",
         "focusFail": "{{component}} not available - retry in {{ms}} sec",
+        "gifsMenu": "GIPHY",
         "groupTitle": "Notifications",
         "hostAskedUnmute": "The moderator would like you to speak",
         "invitedOneMember": "{{name}} has been invited",
@@ -721,6 +723,7 @@
     },
     "passwordDigitsOnly": "Up to {{number}} digits",
     "passwordSetRemotely": "Set by another participant",
+    "pinnedParticipant": "The participant is pinned",
     "polls": {
         "answer": {
             "skip": "Skip",
@@ -1216,10 +1219,12 @@
         "moderator": "Moderator",
         "mute": "Participant is muted",
         "muted": "Muted",
+        "pinToStage": "Pin to stage",
         "remoteControl": "Start / Stop remote control",
         "screenSharing": "Participant is sharing their screen",
         "show": "Show on stage",
         "showSelfView": "Show self view",
+        "unpinFromStage": "Unpin",
         "videoMuted": "Camera disabled",
         "videomute": "Participant has stopped the camera"
     },
