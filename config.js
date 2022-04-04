@@ -1171,9 +1171,15 @@ var config = {
     //  - {room} - The room id
     //  - {lang} - The ISO Language tag
     //
-    // sharedIFrameTemplateUrl: 'https://example.com/link/to/your/iframe/app/{room}?lang={lang}',
-    // sharedIFrameName: 'Whiteboard',
-    // sharedIFrameAvatarUrl: 'images/sharedIFrameAvatar.svg',
+    // sharedIFrame: [
+    //     {
+    //         templateUrl: 'https://example.com/link/to/your/iframe/app/{room}?lang={lang}',
+    //         // Optional:
+    //         avatarUrl: 'images/sharedIFrameAvatar.svg',
+    //         // Optional
+    //         name: 'Whiteboard'
+    //     }
+    // ],
 
     // List of undocumented settings used in jitsi-meet
     /**

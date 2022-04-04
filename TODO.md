@@ -1,0 +1,1 @@
+https://jitsi.org/blog/jitsi-is-back-at-google-summer-of-code/

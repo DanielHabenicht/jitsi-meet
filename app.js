@@ -25,6 +25,31 @@ if (window.Olm) {
     });
 }
 
+// DO NOT CHECK IN
+// eslint-disable-next-line no-undef
+config = {
+    // eslint-disable-next-line no-undef
+    ...config,
+    sharedIFrame: [
+        {
+            templateUrl: 'https://wbo.ophir.dev/boards/{room}?lang={lang}',
+            avatarUrl: 'images/sharedIFrameAvatar.svg',
+            name: 'Whiteboard'
+        },
+        {
+            templateUrl: 'https://jitsi.aok1.jmserv.de/etherpad/p/{room}',
+            avatarUrl: 'images/sharedIFrameAvatarEtherpad.svg',
+            name: 'Etherpad'
+        }
+    ],
+    sharedIFrameTemplateUrl: 'https://wbo.ophir.dev/boards/{room}?lang={lang}',
+    sharedIFrameAvatarUrl: 'images/sharedIFrameAvatar.svg',
+    sharedIFrameName: 'Whiteboard',
+    // eslint-disable-next-line camelcase
+    etherpad_base: 'https://code.etherpad.com/p/'
+};
+
+
 window.APP = {
     API,
     conference,

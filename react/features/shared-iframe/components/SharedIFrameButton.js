@@ -26,7 +26,17 @@ type Props = AbstractButtonProps & {
     /**
      * Whether or not the local participant is sharing an iframe.
      */
-    _sharingIFrame: boolean
+    _sharingIFrame: boolean,
+
+    /**
+     * The name of the shared IFrame application.
+     */
+    _name: string,
+
+    /**
+     * Invoked to obtain translated strings.
+     */
+    t: Function
 };
 
 /**
@@ -35,8 +45,8 @@ type Props = AbstractButtonProps & {
 class SharedIFrameButton extends AbstractButton<Props, *> {
     accessibilityLabel = 'toolbar.accessibilityLabel.sharediframe';
     icon = IconShareIFrame;
-    label = 'toolbar.sharediframe';
-    toggledLabel = 'toolbar.stopSharedIFrame';
+    label = `${this.props.t('toolbar.sharediframe')} ${this.props._name}`;
+    toggledLabel = `${this.props.t('toolbar.stopSharedIFrame')} ${this.props._name}`;
 
     /**
      * Dynamically retrieves tooltip based on sharing state.
@@ -117,9 +127,13 @@ function _mapStateToProps(state): Object {
         isSharing
     } = state['features/shared-iframe'];
 
+    const { sharedIFrameName } = state['features/base/config'];
+
+
     return {
         _isDisabled: sharedIFrameBtnDisabled,
-        _sharingIFrame: isSharing
+        _sharingIFrame: isSharing,
+        _name: sharedIFrameName
     };
 }
 
