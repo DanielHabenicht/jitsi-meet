@@ -41,7 +41,7 @@ type Props = {
      *
      * @private
      */
-     _sharedIFramesState: Object,
+     _sharedIFrames: Object,
 
     /**
      * The current users room.
@@ -133,17 +133,17 @@ class SharedIFrame extends React.PureComponent<Props> {
      * @returns {React$Element}
      */
     render() {
-        const { _localParticipantId, _sharedIFramesState, _room, _lang } = this.props;
+        const { _localParticipantId, _sharedIFrames, _room, _lang } = this.props;
 
         return (
-            Object.keys(_sharedIFramesState).map(key => (
+            Object.keys(_sharedIFrames).map(key => (
                 <div
                     id = { `sharedIFrame${key}` }
                     key = { `sharedIFrame${key}` }
-                    style = { this.getStyles(_sharedIFramesState[key].iFrameTemplateUrl) }>
+                    style = { this.getStyles(_sharedIFrames[key].iFrameTemplateUrl) }>
                     <IFrameManager
-                        iFrameUrl = { getGenericiFrameUrl(_sharedIFramesState[key].iFrameTemplateUrl, _room, _lang) }
-                        isOwner = { _sharedIFramesState[key].ownerId === _localParticipantId } />
+                        iFrameUrl = { getGenericiFrameUrl(_sharedIFrames[key].iFrameTemplateUrl, _room, _lang) }
+                        isOwner = { _sharedIFrames[key].ownerId === _localParticipantId } />
                 </div>))
         );
     }
@@ -158,7 +158,7 @@ class SharedIFrame extends React.PureComponent<Props> {
  * @returns {Props}
  */
 function _mapStateToProps(state) {
-    const sharedIFramesState = state['features/shared-iframe'];
+    const sharedIFrames = state['features/shared-iframe'].iframes || {};
     const { clientHeight, clientWidth } = state['features/base/responsive-ui'];
     const { visible } = state['features/filmstrip'];
 
@@ -172,7 +172,7 @@ function _mapStateToProps(state) {
         clientWidth,
         filmstripVisible: visible,
         _localParticipantId: localParticipant?.id,
-        _sharedIFramesState: sharedIFramesState,
+        _sharedIFrames: sharedIFrames,
         _room: room,
         _lang: lang
     };

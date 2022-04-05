@@ -1,7 +1,28 @@
 import { getCurrentConference } from '../base/conference';
 import { getLocalParticipant } from '../base/participants';
 
-import { RESET_SHARED_IFRAME_STATUS, SET_SHARED_IFRAME_STATUS } from './actionTypes';
+import {
+    ONLY_UPDATE_SHARED_IFRAME_STATUS,
+    RESET_SHARED_IFRAME_STATUS,
+    SET_DISABLE_SHARED_IFRAME_BUTTON,
+    SET_SHARED_IFRAME_STATUS
+} from './actionTypes';
+
+/**
+ * Update the state without side effects.
+ *
+ * @param {string} statePatch - The state patch to be applied.
+ * @returns {{
+ *     type: ONLY_UPDATE_SHARED_IFRAME_STATUS,
+ * }}
+ */
+export function updateSharedIFrameStateWithoutSideEffects(statePatch) {
+    return {
+        type: ONLY_UPDATE_SHARED_IFRAME_STATUS,
+        statePatch
+    };
+}
+
 
 /**
  * Resets the status of the shared iframe.
@@ -83,7 +104,7 @@ export function stopSharedIFrame(shareKey) {
 
         const localParticipant = getLocalParticipant(state);
 
-        if (state['features/shared-iframe'][shareKey]?.ownerId === localParticipant.id) {
+        if (state['features/shared-iframe']?.iframes?.[shareKey]?.ownerId === localParticipant.id) {
             dispatch(resetSharedIFrameStatus(shareKey));
         }
     };
@@ -100,10 +121,40 @@ export function toggleSharedIFrame(shareKey) {
     return (dispatch, getState) => {
         const state = getState();
 
-        if (state['features/shared-iframe'][shareKey]?.isSharing === 'true') {
+        if (state['features/shared-iframe']?.iframes?.[shareKey]?.isSharing === 'true') {
             dispatch(stopSharedIFrame(shareKey));
         } else {
             dispatch(showSharedIFrame(shareKey));
         }
+    };
+}
+
+/**
+ * Update the state without side effects.
+ *
+ * @param {string} statePatch - The state patch to be applied.
+ * @returns {Function}
+ */
+export function updateSharedIFrameState(statePatch) {
+    return dispatch => {
+        dispatch(updateSharedIFrameStateWithoutSideEffects(statePatch));
+    };
+}
+
+/**
+ * Disabled share iframe button.
+ *
+ * @param {boolean} shareKey - The shareKey of the button to be disabled.
+ * @param {boolean} disabled - The current state of the share iframe button.
+ * @returns {{
+ *     type: SET_DISABLE_SHARED_IFRAME_BUTTON,
+ *     disabled: boolean
+ * }}
+ */
+export function setDisableButton(shareKey: string, disabled: boolean) {
+    return {
+        type: SET_DISABLE_SHARED_IFRAME_BUTTON,
+        shareKey,
+        disabled
     };
 }

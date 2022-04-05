@@ -1,6 +1,16 @@
 // @flow
 
 /**
+ * The type of the action which update the state without any side effects.
+ *
+ * {
+ *     type: ONLY_UPDATE_SHARED_IFRAME_STATUS,
+ *     status: string
+ * }
+ */
+ export const ONLY_UPDATE_SHARED_IFRAME_STATUS = 'ONLY_UPDATE_SHARED_IFRAME_STATUS';
+
+/**
  * The type of the action which signals to update the current known state of the
  * shared iframe.
  *

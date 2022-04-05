@@ -123,11 +123,11 @@ class SharedIFrameButton extends AbstractButton<Props, *> {
  * @returns {Props}
  */
 function _mapStateToProps(state, ownProps): Object {
-    const sharedIFrameState = state['features/shared-iframe'];
+    const sharedIFrames = state['features/shared-iframe'].iframes || {};
 
     return {
-        _isDisabled: sharedIFrameState[ownProps.shareKey]?.disabled || false,
-        _sharingIFrame: sharedIFrameState[ownProps.shareKey]?.isSharing || false
+        _isDisabled: sharedIFrames[ownProps.shareKey]?.disabled || false,
+        _sharingIFrame: sharedIFrames[ownProps.shareKey]?.isSharing || false
     };
 }
 
