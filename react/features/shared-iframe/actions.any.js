@@ -6,13 +6,15 @@ import { RESET_SHARED_IFRAME_STATUS, SET_SHARED_IFRAME_STATUS } from './actionTy
 /**
  * Resets the status of the shared iframe.
  *
+ * @param {string} shareKey - The key for which the IFrame should be reset.
  * @returns {{
- *     type: SET_SHARED_IFRAME_STATUS,
+ *     type: RESET_SHARED_IFRAME_STATUS,
  * }}
  */
-export function resetSharedIFrameStatus() {
+export function resetSharedIFrameStatus(shareKey) {
     return {
-        type: RESET_SHARED_IFRAME_STATUS
+        type: RESET_SHARED_IFRAME_STATUS,
+        shareKey
     };
 }
 
@@ -31,9 +33,10 @@ export function resetSharedIFrameStatus() {
  *     iFrameTemplateUrl: string,
  * }}
  */
-export function setSharedIFrameStatus({ iFrameTemplateUrl, isSharing, ownerId }) {
+export function setSharedIFrameStatus({ shareKey, iFrameTemplateUrl, isSharing, ownerId }) {
     return {
         type: SET_SHARED_IFRAME_STATUS,
+        shareKey,
         ownerId,
         isSharing,
         iFrameTemplateUrl
@@ -44,21 +47,22 @@ export function setSharedIFrameStatus({ iFrameTemplateUrl, isSharing, ownerId })
  *
  * Shows the shared IFrame for all participants.
  *
- * @param {string} iFrameTemplateUrl - The iframe url to be played.
+ * @param {string} shareKey - The key of the iframe to be shown.
  *
  * @returns {Function}
  */
-export function showSharedIFrame() {
+export function showSharedIFrame(shareKey) {
     return (dispatch, getState) => {
         const state = getState();
         const conference = getCurrentConference(state);
-        const { sharedIFrameTemplateUrl } = state['features/base/config'];
+        const { sharedIFrameConfig } = state['features/base/config'];
 
         if (conference) {
             const localParticipant = getLocalParticipant(state);
 
             dispatch(setSharedIFrameStatus({
-                iFrameTemplateUrl: sharedIFrameTemplateUrl,
+                shareKey,
+                iFrameTemplateUrl: sharedIFrameConfig[shareKey].templateUrl,
                 isSharing: 'true',
                 ownerId: localParticipant.id
             }));
@@ -70,16 +74,17 @@ export function showSharedIFrame() {
  *
  * Stops sharing of the IFrame.
  *
+ * @param {string} shareKey - The key of the iframe to be stopped.
  * @returns {Function}
  */
-export function stopSharedIFrame() {
+export function stopSharedIFrame(shareKey) {
     return (dispatch, getState) => {
         const state = getState();
-        const { ownerId } = state['features/shared-iframe'];
+
         const localParticipant = getLocalParticipant(state);
 
-        if (ownerId === localParticipant.id) {
-            dispatch(resetSharedIFrameStatus());
+        if (state['features/shared-iframe'][shareKey]?.ownerId === localParticipant.id) {
+            dispatch(resetSharedIFrameStatus(shareKey));
         }
     };
 }
@@ -88,17 +93,17 @@ export function stopSharedIFrame() {
  *
  * Toggles the shared iframe visibility.
  *
+ * @param {string} shareKey - The key of the iframe to be toggled.
  * @returns {Function}
  */
-export function toggleSharedIFrame() {
+export function toggleSharedIFrame(shareKey) {
     return (dispatch, getState) => {
         const state = getState();
-        const { isSharing } = state['features/shared-iframe'];
 
-        if (isSharing === 'true') {
-            dispatch(stopSharedIFrame());
+        if (state['features/shared-iframe'][shareKey]?.isSharing === 'true') {
+            dispatch(stopSharedIFrame(shareKey));
         } else {
-            dispatch(showSharedIFrame());
+            dispatch(showSharedIFrame(shareKey));
         }
     };
 }

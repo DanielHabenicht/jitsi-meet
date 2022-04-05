@@ -456,10 +456,10 @@ function initCommands() {
             APP.store.dispatch(toggleSharedIFrame());
         },
 
-        'stop-share-iframe': () => {
+        'stop-share-iframe': shareKey => {
             logger.debug('Share iframe command received');
             sendAnalytics(createApiEvent('share.iframe.stop'));
-            APP.store.dispatch(stopSharedIFrame());
+            APP.store.dispatch(stopSharedIFrame(shareKey));
         },
 
         /**

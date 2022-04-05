@@ -28,7 +28,7 @@ import { hideGif, showGif } from '../../../gifs/actions';
 import { getGifDisplayMode, getGifForParticipant } from '../../../gifs/functions';
 import { PresenceLabel } from '../../../presence-status';
 import { getCurrentLayout, LAYOUTS } from '../../../video-layout';
-import { addStageParticipant } from '../../actions.web';
+import { addStageParticipant, setStageParticipants } from '../../actions.web';
 import {
     DISPLAY_MODE_TO_CLASS_NAME,
     DISPLAY_VIDEO,
@@ -618,10 +618,16 @@ class Thumbnail extends Component<Props, State> {
      */
     _onClick() {
         const { _participant, dispatch, _stageFilmstripDisabled } = this.props;
-        const { id, pinned } = _participant;
+        const { id, pinned, isFakeParticipant } = _participant;
 
         if (_stageFilmstripDisabled) {
             dispatch(pinParticipant(pinned ? null : id));
+        } else if (isFakeParticipant) {
+            // Remove all participants from stage to see the fake participant (mostly a fullscreen application)
+            dispatch(setStageParticipants([ {
+                participantId: id,
+                pinned: true
+            } ]));
         } else {
             dispatch(addStageParticipant(id, true));
         }

@@ -1171,9 +1171,17 @@ var config = {
     //  - {room} - The room id
     //  - {lang} - The ISO Language tag
     //
-    // sharedIFrameTemplateUrl: 'https://example.com/link/to/your/iframe/app/{room}?lang={lang}',
-    // sharedIFrameName: 'Whiteboard',
-    // sharedIFrameAvatarUrl: 'images/sharedIFrameAvatar.svg',
+    // sharedIFrameConfig: {
+    //     whiteboard: { // The Id and displayed name of the sharedIframe
+    //         templateUrl: 'https://example.com/link/to/your/iframe/app/{room}?lang={lang}',
+    //         // Optional:
+    //         avatarUrl: 'images/sharedIFrameAvatar.svg',
+    //     },
+    //     etherpad: {
+    //         templateUrl: 'https://example.com/link/to/your/iframe/app/{room}?lang={lang}',
+    //         avatarUrl: 'images/sharedIFrameAvatarEtherpad.svg',
+    //     }
+    // },
 
     // List of undocumented settings used in jitsi-meet
     /**

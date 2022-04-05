@@ -2,7 +2,7 @@
 
 import { batch } from 'react-redux';
 
-import { CONFERENCE_LEFT, getCurrentConference } from '../base/conference';
+import { CONFERENCE_JOINED, CONFERENCE_LEFT, getCurrentConference } from '../base/conference';
 import {
     PARTICIPANT_LEFT,
     getLocalParticipant,
@@ -17,7 +17,7 @@ import {
     resetSharedIFrameStatus,
     setSharedIFrameStatus
 } from './actions.any';
-import { SHARED_IFRAME, IFRAME_PLAYER_PARTICIPANT_NAME } from './constants';
+import { SHARED_IFRAME } from './constants';
 
 /**
  * Middleware that captures actions related to iframe sharing and updates
@@ -31,19 +31,29 @@ MiddlewareRegistry.register(store => next => action => {
     const state = getState();
     const conference = getCurrentConference(state);
     const localParticipantId = getLocalParticipant(state)?.id;
-    const { iFrameTemplateUrl, isSharing, ownerId } = action;
-    const { ownerId: stateOwnerId, iFrameTemplateUrl: stateiFrameUrl } = state['features/shared-iframe'];
+    const { shareKey, iFrameTemplateUrl, isSharing, ownerId } = action;
 
     switch (action.type) {
     case CONFERENCE_LEFT:
-        dispatch(resetSharedIFrameStatus());
+        // Reset all sharedIFrames
+        for (const { shareKey: thisShareKey }
+            of Object.keys(state['features/shared-iframe']).map(key => state['features/shared-iframe'][key])) {
+            dispatch(resetSharedIFrameStatus(thisShareKey));
+        }
+        break;
+    case CONFERENCE_JOINED:
+        // TODO: Hinder pinnig of shared IFrames
         break;
     case PARTICIPANT_LEFT:
-        if (action.participant.id === stateOwnerId) {
-            batch(() => {
-                dispatch(resetSharedIFrameStatus());
-                dispatch(participantLeft(stateiFrameUrl, conference));
-            });
+        // Check each sharedIFrame if the participant left is his owner
+        for (const { shareKey: thisShareKey, iFrameTemplateUrl: thisIFrameTemplateUrl, ownerId: thisOwnerId }
+            of Object.keys(state['features/shared-iframe']).map(key => state['features/shared-iframe'][key])) {
+            if (action.participant.id === thisOwnerId) {
+                batch(() => {
+                    dispatch(resetSharedIFrameStatus(thisShareKey));
+                    dispatch(participantLeft(thisIFrameTemplateUrl, conference));
+                });
+            }
         }
         break;
     case SET_SHARED_IFRAME_STATUS:
@@ -51,6 +61,7 @@ MiddlewareRegistry.register(store => next => action => {
             sendShareIFrameCommand(
                 SHARED_IFRAME,
                 {
+                    shareKey,
                     conference,
                     localParticipantId,
                     isSharing,
@@ -59,12 +70,13 @@ MiddlewareRegistry.register(store => next => action => {
         }
         break;
     case RESET_SHARED_IFRAME_STATUS:
-        if (localParticipantId === stateOwnerId) {
+        if (localParticipantId === state['features/shared-iframe'][shareKey]?.ownerId) {
             sendShareIFrameCommand(
                 SHARED_IFRAME,
                 {
+                    shareKey,
                     conference,
-                    id: stateiFrameUrl,
+                    id: state['features/shared-iframe'][shareKey]?.iFrameTemplateUrl,
                     localParticipantId,
                     isSharing: false
                 });
@@ -88,7 +100,7 @@ StateListenerRegistry.register(
 
             conference.addCommandListener(SHARED_IFRAME,
                 ({ value, attributes }) => {
-                    const { from } = attributes;
+                    const { from, shareKey } = attributes;
                     const localParticipantId = getLocalParticipant(getState()).id;
 
                     if (attributes.isSharing === 'true') {
@@ -96,7 +108,7 @@ StateListenerRegistry.register(
                     } else {
                         dispatch(participantLeft(value, conference));
                         if (localParticipantId !== from) {
-                            dispatch(resetSharedIFrameStatus());
+                            dispatch(resetSharedIFrameStatus(shareKey));
                         }
                     }
                 }
@@ -115,28 +127,31 @@ StateListenerRegistry.register(
  * @param {JitsiConference} conference - The current conference.
  * @returns {void}
  */
-function handleSharingIFrame(store, iFrameTemplateUrl, { isSharing, from }, conference) {
+function handleSharingIFrame(store, iFrameTemplateUrl, { shareKey, isSharing, from }, conference) {
     const { dispatch, getState } = store;
     const localParticipantId = getLocalParticipant(getState()).id;
 
     if (isSharing === 'true') {
         const state = getState();
-        const { sharedIFrameAvatarUrl: avatarURL, sharedIFrameName } = state['features/base/config'];
+        const { sharedIFrameConfig } = state['features/base/config'];
 
         dispatch(participantJoined({
             conference,
             id: iFrameTemplateUrl,
             isFakeParticipant: true,
-            avatarURL,
-            name: sharedIFrameName || IFRAME_PLAYER_PARTICIPANT_NAME
+            avatarURL: sharedIFrameConfig[shareKey].avatarUrl,
+            name: shareKey
         }));
 
+        // TODO: only pin if already in conference
+        // const { participantId } = state['features/large-video'];
         dispatch(pinParticipant(iFrameTemplateUrl));
     }
 
     if (localParticipantId !== from) {
         dispatch(setSharedIFrameStatus({
             ownerId: from,
+            shareKey,
             isSharing,
             iFrameTemplateUrl
         }));
@@ -155,11 +170,12 @@ function handleSharingIFrame(store, iFrameTemplateUrl, { isSharing, from }, conf
  * @param {string} localParticipantId - The id of the local participant.
  * @returns {void}
  */
-function sendShareIFrameCommand(commandName, { id, isSharing, conference, localParticipantId }) {
+function sendShareIFrameCommand(commandName, { id, shareKey, isSharing, conference, localParticipantId }) {
     conference.sendCommandOnce(commandName, {
         value: id,
         attributes: {
             from: localParticipantId,
+            shareKey,
             isSharing
         }
     });

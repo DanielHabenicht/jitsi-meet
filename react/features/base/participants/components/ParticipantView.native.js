@@ -4,7 +4,6 @@ import React, { Component } from 'react';
 import { Text, View } from 'react-native';
 
 import { SharedIFrame } from '../../../shared-iframe/components';
-import { IFRAME_PLAYER_PARTICIPANT_NAME } from '../../../shared-iframe/constants';
 import { SharedVideo } from '../../../shared-video/components/native';
 import { VIDEO_PLAYER_PARTICIPANT_NAME, YOUTUBE_PLAYER_PARTICIPANT_NAME } from '../../../shared-video/constants';
 import { Avatar } from '../../avatar';
@@ -52,11 +51,11 @@ type Props = {
     _participantName: string,
 
     /**
-     * The constant name of the shared-iframe participant.
+     * Whether the current participant is an IFrame participant.
      *
      * @private
      */
-    _iFrameParticipantName: string,
+    _isIFrameParticipant: string,
 
     /**
      * True if the video should be rendered, false otherwise.
@@ -200,7 +199,7 @@ class ParticipantView extends Component<Props> {
         const {
             _connectionStatus: connectionStatus,
             _isFakeParticipant,
-            _iFrameParticipantName,
+            _isIFrameParticipant,
             _participantName,
             _renderVideo: renderVideo,
             _videoTrack: videoTrack,
@@ -226,7 +225,7 @@ class ParticipantView extends Component<Props> {
                 || _participantName === YOUTUBE_PLAYER_PARTICIPANT_NAME)
             && !disableVideo;
         const renderSharedIFrame = _isFakeParticipant
-            && _participantName === _iFrameParticipantName && !disableVideo;
+            && _isIFrameParticipant && !disableVideo;
 
         return (
             <Container
@@ -287,7 +286,7 @@ class ParticipantView extends Component<Props> {
 function _mapStateToProps(state, ownProps) {
     const { disableVideo, participantId } = ownProps;
     const participant = getParticipantById(state, participantId);
-    const { sharedIFrameName } = state['features/base/config'];
+    const { sharedIFrameConfig } = state['features/base/config'];
     let connectionStatus;
     let participantName;
 
@@ -295,7 +294,7 @@ function _mapStateToProps(state, ownProps) {
         _connectionStatus:
             connectionStatus
                 || JitsiParticipantConnectionStatus.ACTIVE,
-        _iFrameParticipantName: sharedIFrameName || IFRAME_PLAYER_PARTICIPANT_NAME,
+        _isIFrameParticipant: Object.keys(sharedIFrameConfig).includes(participant.name),
         _isFakeParticipant: participant && participant.isFakeParticipant,
         _participantName: participantName,
         _renderVideo: shouldRenderParticipantVideo(state, participantId) && !disableVideo,
