@@ -8,7 +8,6 @@ import { Watermarks } from '../../base/react';
 import { connect } from '../../base/redux';
 import { setColorAlpha } from '../../base/util';
 import { FILMSTRIP_BREAKPOINT, isFilmstripResizable } from '../../filmstrip';
-import { getVerticalViewMaxWidth } from '../../filmstrip/functions.web';
 import { SharedIFrame } from '../../shared-iframe/components';
 import { SharedVideo } from '../../shared-video/components/web';
 import { VIDEO_PLAYER_PARTICIPANT_NAME, YOUTUBE_PLAYER_PARTICIPANT_NAME } from '../../shared-video/constants';
@@ -149,7 +148,7 @@ class LargeVideo extends Component<Props> {
             _isFakeParticipant,
             _participantId,
             _participantName,
-            _isIFrameParticipant,
+            _isIFrameParticipant
         } = this.props;
         const style = this._getCustomSyles();
         const className = `videocontainer${_isChatOpen ? ' shift-right' : ''}`;
@@ -344,8 +343,7 @@ function _mapStateToProps(state) {
         _participantId: participantId,
         _participantName: participant && participant.name,
         _isIFrameParticipant: Object.keys(sharedIFrameConfig).includes(participant && participant.name),
-        _isFakeParticipant: participant && participant.isFakeParticipant,
-        _verticalViewMaxWidth: getVerticalViewMaxWidth(state)
+        _isFakeParticipant: participant && participant.isFakeParticipant
     };
 }
 
