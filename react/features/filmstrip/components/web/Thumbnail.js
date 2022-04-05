@@ -628,6 +628,7 @@ class Thumbnail extends Component<Props, State> {
                 participantId: id,
                 pinned: true
             } ]));
+            dispatch(pinParticipant(pinned ? null : id));
         } else {
             dispatch(addStageParticipant(id, true));
         }
