@@ -137,4 +137,5 @@ function _mapDispatchToProps(dispatch: Function): $Shape<Props> {
 
 export default connect(() => {
     // TODO: Refactor to use dispatch directly (also remove the flow statement)
+    return {};
 }, _mapDispatchToProps)(IFrameManager);
