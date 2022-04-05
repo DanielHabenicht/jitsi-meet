@@ -1007,7 +1007,10 @@
             "shareRoom": "Invite someone",
             "shareYourScreen": "Start / Stop sharing your screen",
             "shareaudio": "Share audio",
-            "sharediframe": "Toggle iframe sharing",
+            "sharediframe": {
+                "whiteboard": "Toggle Whiteboard sharing",
+                "etherpad": "Toggle Etherpad sharing"
+            },
             "sharedvideo": "Toggle video sharing",
             "shortcuts": "Toggle shortcuts",
             "show": "Show on stage",
@@ -1033,7 +1036,10 @@
         "closeChat": "Close chat",
         "closeReactionsMenu": "Close reactions menu",
         "disableReactionSounds": "You can disable reaction sounds for this meeting",
-        "disabledSharedIFrame": "Someone else is already sharing.",
+        "disabledSharedIFrame": {
+            "whiteboard": "Someone else is already sharing Whiteboard.",
+            "etherpad": "Someone else is already sharing Etherpad."
+        },
         "documentClose": "Close shared document",
         "documentOpen": "Open shared document",
         "download": "Download our apps",
@@ -1086,7 +1092,10 @@
         "selectBackground": "Select background",
         "shareRoom": "Invite someone",
         "shareaudio": "Share audio",
-        "sharediframe": "Share iframe",
+        "sharediframe": {
+            "whiteboard": "Share Whiteboard",
+            "etherpad": "Share Etherpad"
+        },
         "sharedvideo": "Share video",
         "shortcuts": "View shortcuts",
         "silence": "Silence",
@@ -1095,7 +1104,10 @@
         "startSubtitles": "Start subtitles",
         "stopAudioSharing": "Stop audio sharing",
         "stopScreenSharing": "Stop screen sharing",
-        "stopSharedIFrame": "Stop IFrame",
+        "stopSharedIFrame": {
+            "whiteboard": "Stop Whiteboard",
+            "etherpad": "Stop Etherpad"
+        },
         "stopSharedVideo": "Stop video",
         "stopSubtitles": "Stop subtitles",
         "surprised": "Surprised",

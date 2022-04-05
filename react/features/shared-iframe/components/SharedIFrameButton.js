@@ -26,30 +26,40 @@ type Props = AbstractButtonProps & {
     /**
      * Whether or not the local participant is sharing an iframe.
      */
-    _sharingIFrame: boolean
+    _sharingIFrame: boolean,
+
+    /**
+     * Invoked to obtain translated strings.
+     */
+    t: Function,
+
+    /**
+     * The Key of the sharedIFrame Config for this button.
+     */
+    shareKey: String
 };
 
 /**
  * Implements an {@link AbstractButton} to open the user documentation in a new window.
  */
 class SharedIFrameButton extends AbstractButton<Props, *> {
-    accessibilityLabel = 'toolbar.accessibilityLabel.sharediframe';
+    accessibilityLabel = `toolbar.accessibilityLabel.sharediframe.${this.props.shareKey}`;
     icon = IconShareIFrame;
-    label = 'toolbar.sharediframe';
-    toggledLabel = 'toolbar.stopSharedIFrame';
+    label = `toolbar.sharediframe.${this.props.shareKey}`;
+    toggledLabel = `toolbar.stopSharedIFrame.${this.props.shareKey}`;
 
     /**
      * Dynamically retrieves tooltip based on sharing state.
      */
     get tooltip() {
         if (this._isDisabled()) {
-            return 'toolbar.disabledSharedIFrame';
+            return `toolbar.disabledSharedIFrame.${this.props.shareKey}`;
         }
         if (this._isToggled()) {
-            return 'toolbar.stopSharedIFrame';
+            return `toolbar.stopSharedIFrame.${this.props.shareKey}`;
         }
 
-        return 'toolbar.sharediframe';
+        return `toolbar.sharediframe.${this.props.shareKey}`;
     }
 
     /**
@@ -100,7 +110,7 @@ class SharedIFrameButton extends AbstractButton<Props, *> {
      * @returns {void}
      */
     _doToggleSharedIFrame() {
-        this.props.dispatch(toggleSharedIFrame());
+        this.props.dispatch(toggleSharedIFrame(this.props.shareKey));
     }
 }
 
@@ -108,18 +118,16 @@ class SharedIFrameButton extends AbstractButton<Props, *> {
  * Maps part of the Redux state to the props of this component.
  *
  * @param {Object} state - The Redux state.
+ * @param {Object} ownProps - The Props.
  * @private
  * @returns {Props}
  */
-function _mapStateToProps(state): Object {
-    const {
-        disabled: sharedIFrameBtnDisabled,
-        isSharing
-    } = state['features/shared-iframe'];
+function _mapStateToProps(state, ownProps): Object {
+    const sharedIFrameState = state['features/shared-iframe'];
 
     return {
-        _isDisabled: sharedIFrameBtnDisabled,
-        _sharingIFrame: isSharing
+        _isDisabled: sharedIFrameState[ownProps.shareKey]?.disabled || false,
+        _sharingIFrame: sharedIFrameState[ownProps.shareKey]?.isSharing || false
     };
 }
 

@@ -10,7 +10,6 @@ import { setColorAlpha } from '../../base/util';
 import { FILMSTRIP_BREAKPOINT, isFilmstripResizable } from '../../filmstrip';
 import { getVerticalViewMaxWidth } from '../../filmstrip/functions.web';
 import { SharedIFrame } from '../../shared-iframe/components';
-import { IFRAME_PLAYER_PARTICIPANT_NAME } from '../../shared-iframe/constants';
 import { SharedVideo } from '../../shared-video/components/web';
 import { VIDEO_PLAYER_PARTICIPANT_NAME, YOUTUBE_PLAYER_PARTICIPANT_NAME } from '../../shared-video/constants';
 import { Captions } from '../../subtitles/';
@@ -69,6 +68,13 @@ type Props = {
     _isFakeParticipant: boolean,
 
     /**
+     * The If of the participant (to be) depicted by {@link LargeVideo}.
+     *
+     * @public
+     */
+     _participantId: string,
+
+    /**
      * The Name of the participant (to be) depicted by {@link LargeVideo}.
      *
      * @public
@@ -76,11 +82,11 @@ type Props = {
      _participantName: string,
 
     /**
-     * The constant name of the shared-iframe participant.
+     * Whether the current participant is an IFrame Participant.
      *
      * @private
      */
-     _iFrameParticipantName: string,
+     _isIFrameParticipant: string,
 
     /**
      * The Redux dispatch function.
@@ -141,8 +147,9 @@ class LargeVideo extends Component<Props> {
             _isChatOpen,
             _noAutoPlayVideo,
             _isFakeParticipant,
+            _participantId,
             _participantName,
-            _iFrameParticipantName
+            _isIFrameParticipant,
         } = this.props;
         const style = this._getCustomSyles();
         const className = `videocontainer${_isChatOpen ? ' shift-right' : ''}`;
@@ -152,7 +159,7 @@ class LargeVideo extends Component<Props> {
                 _participantName === VIDEO_PLAYER_PARTICIPANT_NAME
                 || _participantName === YOUTUBE_PLAYER_PARTICIPANT_NAME);
         const renderSharedIFrame = _isFakeParticipant
-            && _participantName === _iFrameParticipantName;
+            && _isIFrameParticipant;
 
         const speakerStyle = {
             display: renderSharedIFrame || renderSharedVideo ? 'none' : 'block'
@@ -165,7 +172,7 @@ class LargeVideo extends Component<Props> {
                 ref = { this._containerRef }
                 style = { style }>
                 { renderSharedVideo && <SharedVideo /> }
-                <SharedIFrame visible = { renderSharedIFrame } />
+                <SharedIFrame shareUrl = { _participantId } />
 
                 <div id = 'etherpad' />
 
@@ -323,7 +330,7 @@ function _mapStateToProps(state) {
     const { width: verticalFilmstripWidth, visible } = state['features/filmstrip'];
     const { participantId } = state['features/large-video'];
     const participant = getParticipantById(state, participantId);
-    const { sharedIFrameName } = state['features/base/config'];
+    const { sharedIFrameConfig } = state['features/base/config'];
 
     return {
         _backgroundAlpha: state['features/base/config'].backgroundAlpha,
@@ -334,9 +341,11 @@ function _mapStateToProps(state) {
         _resizableFilmstrip: isFilmstripResizable(state),
         _verticalFilmstripWidth: verticalFilmstripWidth.current,
         _visibleFilmstrip: visible,
+        _participantId: participantId,
         _participantName: participant && participant.name,
-        _iFrameParticipantName: sharedIFrameName || IFRAME_PLAYER_PARTICIPANT_NAME,
-        _isFakeParticipant: participant && participant.isFakeParticipant
+        _isIFrameParticipant: Object.keys(sharedIFrameConfig).includes(participant && participant.name),
+        _isFakeParticipant: participant && participant.isFakeParticipant,
+        _verticalViewMaxWidth: getVerticalViewMaxWidth(state)
     };
 }
 

@@ -32,16 +32,16 @@ type Props = {
     filmstripVisible: boolean,
 
     /**
-     * Is the iframe shared by the local user.
+     * The id of the local participant.
      */
-    isOwner: boolean,
+     _localParticipantId: string,
 
     /**
-     * The shared iframe template url.
+     * The current shared iframe state.
      *
      * @private
      */
-    _iFrameTemplateUrl: string,
+     _sharedIFramesState: Object,
 
     /**
      * The current users room.
@@ -58,9 +58,9 @@ type Props = {
      _lang: string,
 
     /**
-     * Decides if the shared iframe should be visible.
+     * The templateUrl of the IFrame which should be displayed.
      */
-     visible: string,
+     shareUrl: string,
 }
 
 /** .
@@ -109,14 +109,16 @@ class SharedIFrame extends React.PureComponent<Props> {
     /**
      * Computes the styles of the SharedIFrame Component.
      *
+     * @param {string} templateUrl - The templateUrl of the IFrame.
      * @returns {{
      *  display: string,
      *  height: number,
      *  width: number
      * }}
      */
-    getStyles() {
-        const { visible } = this.props;
+    getStyles(templateUrl) {
+        const { shareUrl } = this.props;
+        const visible = shareUrl === templateUrl;
 
         return {
             display: visible ? 'block' : 'none',
@@ -131,16 +133,18 @@ class SharedIFrame extends React.PureComponent<Props> {
      * @returns {React$Element}
      */
     render() {
-        const { isOwner, _iFrameTemplateUrl, _room, _lang } = this.props;
+        const { _localParticipantId, _sharedIFramesState, _room, _lang } = this.props;
 
         return (
-            <div
-                id = 'sharedIFrame'
-                style = { this.getStyles() }>
-                <IFrameManager
-                    iFrameUrl = { getGenericiFrameUrl(_iFrameTemplateUrl, _room, _lang) }
-                    isOwner = { isOwner } />
-            </div>
+            Object.keys(_sharedIFramesState).map(key => (
+                <div
+                    id = { `sharedIFrame${key}` }
+                    key = { `sharedIFrame${key}` }
+                    style = { this.getStyles(_sharedIFramesState[key].iFrameTemplateUrl) }>
+                    <IFrameManager
+                        iFrameUrl = { getGenericiFrameUrl(_sharedIFramesState[key].iFrameTemplateUrl, _room, _lang) }
+                        isOwner = { _sharedIFramesState[key].ownerId === _localParticipantId } />
+                </div>))
         );
     }
 }
@@ -154,7 +158,7 @@ class SharedIFrame extends React.PureComponent<Props> {
  * @returns {Props}
  */
 function _mapStateToProps(state) {
-    const { ownerId, iFrameTemplateUrl } = state['features/shared-iframe'];
+    const sharedIFramesState = state['features/shared-iframe'];
     const { clientHeight, clientWidth } = state['features/base/responsive-ui'];
     const { visible } = state['features/filmstrip'];
 
@@ -167,8 +171,8 @@ function _mapStateToProps(state) {
         clientHeight,
         clientWidth,
         filmstripVisible: visible,
-        isOwner: ownerId === localParticipant?.id,
-        _iFrameTemplateUrl: iFrameTemplateUrl,
+        _localParticipantId: localParticipant?.id,
+        _sharedIFramesState: sharedIFramesState,
         _room: room,
         _lang: lang
     };

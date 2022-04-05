@@ -1,8 +1,6 @@
 import { getFakeParticipants } from '../base/participants';
 import { toState } from '../base/redux';
 
-import { IFRAME_PLAYER_PARTICIPANT_NAME } from './constants';
-
 
 /**
  * Returns true if an IFrame is shared in the meeting.
@@ -14,13 +12,15 @@ export function isIFrameSharingActive(stateful: Object | Function): boolean {
 
     let isIFrameActive = false;
     const state = toState(stateful);
-    const { sharedIFrameName } = state['features/base/config'];
+    const { sharedIFrameConfig } = state['features/base/config'];
 
     // eslint-disable-next-line no-unused-vars
     for (const [ id, p ] of getFakeParticipants(stateful)) {
-        if (p.name === sharedIFrameName || p.name === IFRAME_PLAYER_PARTICIPANT_NAME) {
-            isIFrameActive = true;
-            break;
+        for (const shareKey of Object.keys(sharedIFrameConfig)) {
+            if (p.name === shareKey) {
+                isIFrameActive = true;
+                break;
+            }
         }
     }
 

@@ -57,7 +57,7 @@ import {
 } from '../../../screen-share/';
 import SecurityDialogButton from '../../../security/components/security-dialog/web/SecurityDialogButton';
 import { SettingsButton } from '../../../settings';
-import { SharedIFrameButton } from '../../../shared-iframe/components';
+import { SharedIFrameButtonContainer } from '../../../shared-iframe/components';
 import { SharedVideoButton } from '../../../shared-video/components';
 import { SpeakerStatsButton } from '../../../speaker-stats/components/web';
 import {
@@ -742,7 +742,7 @@ class Toolbox extends Component<Props> {
 
         const shareIFrame = {
             key: 'sharediframe',
-            Content: SharedIFrameButton,
+            Content: SharedIFrameButtonContainer,
             group: 3
         };
 

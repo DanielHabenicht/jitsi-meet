@@ -14,7 +14,7 @@ import { isReactionsEnabled } from '../../../reactions/functions.any';
 import { LiveStreamButton, RecordButton } from '../../../recording';
 import SecurityDialogButton
     from '../../../security/components/security-dialog/native/SecurityDialogButton';
-import { SharedIFrameButton } from '../../../shared-iframe/components';
+import { SharedIFrameButtonContainer } from '../../../shared-iframe/components';
 import { SharedVideoButton } from '../../../shared-video/components';
 import SpeakerStatsButton from '../../../speaker-stats/components/native/SpeakerStatsButton';
 import { ClosedCaptionButton } from '../../../subtitles';
@@ -147,7 +147,7 @@ class OverflowMenu extends PureComponent<Props, State> {
                 <LiveStreamButton { ...buttonProps } />
                 <Divider style = { styles.divider } />
                 <SharedVideoButton { ...buttonProps } />
-                <SharedIFrameButton { ...buttonProps } />
+                <SharedIFrameButtonContainer { ...buttonProps } />
                 <ScreenSharingButton { ...buttonProps } />
                 <SpeakerStatsButton { ...buttonProps } />
                 {!toolbarButtons.has('togglecamera') && <ToggleCameraButton { ...buttonProps } />}
