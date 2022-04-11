@@ -122,6 +122,7 @@ StateListenerRegistry.register(
                     }
 
                     // Update state on first join with the rest of the state
+                    delete newIFrames[attributes.shareKey];
                     Object.keys(newIFrames).forEach(key => {
                         if (oldIFrames[key] === undefined && newIFrames[key].isSharing === 'true') {
                             handleSharingIFrame(store,
