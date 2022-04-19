@@ -98,10 +98,11 @@ StateListenerRegistry.register(
  * Updates the receiver constraints when the stage participants change.
  */
 StateListenerRegistry.register(
-    state => getActiveParticipantsIds(state).sort()
-        .join(),
+    state => getActiveParticipantsIds(state).sort(),
     (_, store) => {
         _updateReceiverVideoConstraints(store);
+    }, {
+        deepEquals: true
     }
 );
 
@@ -250,7 +251,13 @@ function _updateReceiverVideoConstraints({ getState }) {
 
         if (visibleRemoteParticipants?.size) {
             visibleRemoteParticipants.forEach(participantId => {
-                const sourceName = getTrackSourceNameByMediaTypeAndParticipant(tracks, MEDIA_TYPE.VIDEO, participantId);
+                let sourceName;
+
+                if (remoteScreenShares.includes(participantId)) {
+                    sourceName = participantId;
+                } else {
+                    sourceName = getTrackSourceNameByMediaTypeAndParticipant(tracks, MEDIA_TYPE.VIDEO, participantId);
+                }
 
                 if (sourceName) {
                     visibleRemoteTrackSourceNames.push(sourceName);
@@ -262,10 +269,14 @@ function _updateReceiverVideoConstraints({ getState }) {
         }
 
         if (localParticipantId !== largeVideoParticipantId) {
-            largeVideoSourceName = getTrackSourceNameByMediaTypeAndParticipant(
-                tracks, MEDIA_TYPE.VIDEO,
-                largeVideoParticipantId
-            );
+            if (remoteScreenShares.includes(largeVideoParticipantId)) {
+                largeVideoSourceName = largeVideoParticipantId;
+            } else {
+                largeVideoSourceName = getTrackSourceNameByMediaTypeAndParticipant(
+                    tracks, MEDIA_TYPE.VIDEO,
+                    largeVideoParticipantId
+                );
+            }
         }
 
         // Tile view.
@@ -280,11 +291,7 @@ function _updateReceiverVideoConstraints({ getState }) {
 
             // Prioritize screenshare in tile view.
             if (remoteScreenShares?.length) {
-                const remoteScreenShareSourceNames = remoteScreenShares.map(remoteScreenShare =>
-                    getTrackSourceNameByMediaTypeAndParticipant(tracks, MEDIA_TYPE.VIDEO, remoteScreenShare)
-                );
-
-                receiverConstraints.selectedSources = remoteScreenShareSourceNames;
+                receiverConstraints.selectedSources = remoteScreenShares;
             }
 
         // Stage view.
@@ -316,6 +323,12 @@ function _updateReceiverVideoConstraints({ getState }) {
                 receiverConstraints.constraints[largeVideoSourceName] = { 'maxHeight': quality };
                 receiverConstraints.onStageSources = [ largeVideoSourceName ];
             }
+        }
+
+        if (remoteScreenShares?.length) {
+            remoteScreenShares.forEach(sourceName => {
+                receiverConstraints.constraints[sourceName] = { 'maxHeight': VIDEO_QUALITY_LEVELS.ULTRA };
+            });
         }
 
     } else {

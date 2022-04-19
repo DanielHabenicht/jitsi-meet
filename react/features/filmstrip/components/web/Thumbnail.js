@@ -7,9 +7,11 @@ import React, { Component } from 'react';
 
 import { createScreenSharingIssueEvent, sendAnalytics } from '../../../analytics';
 import { Avatar } from '../../../base/avatar';
+import { getSourceNameSignalingFeatureFlag } from '../../../base/config';
 import { isMobileBrowser } from '../../../base/environment/utils';
 import { MEDIA_TYPE, VideoTrack } from '../../../base/media';
 import {
+    getLocalParticipant,
     getParticipantByIdOrUndefined,
     hasRaisedHand,
     pinParticipant
@@ -21,14 +23,16 @@ import {
     getLocalAudioTrack,
     getLocalVideoTrack,
     getTrackByMediaTypeAndParticipant,
+    getFakeScreenshareParticipantTrack,
     updateLastTrackVideoMediaEvent
 } from '../../../base/tracks';
-import { getVideoObjectPosition } from '../../../face-centering/functions';
+import { getVideoObjectPosition } from '../../../face-landmarks/functions';
 import { hideGif, showGif } from '../../../gifs/actions';
 import { getGifDisplayMode, getGifForParticipant } from '../../../gifs/functions';
 import { PresenceLabel } from '../../../presence-status';
 import { getCurrentLayout, LAYOUTS } from '../../../video-layout';
-import { addStageParticipant, setStageParticipants } from '../../actions.web';
+import { togglePinStageParticipant } from '../../actions';
+import { setStageParticipants } from '../../actions.web';
 import {
     DISPLAY_MODE_TO_CLASS_NAME,
     DISPLAY_VIDEO,
@@ -40,10 +44,12 @@ import {
     getActiveParticipantsIds,
     getDisplayModeInput,
     isVideoPlayable,
-    showGridInVerticalView
+    showGridInVerticalView,
+    isStageFilmstripEnabled,
+    shouldDisplayStageFilmstrip
 } from '../../functions';
-import { isStageFilmstripEnabled } from '../../functions.web';
 
+import FakeScreenShareParticipant from './FakeScreenShareParticipant';
 import ThumbnailAudioIndicator from './ThumbnailAudioIndicator';
 import ThumbnailBottomIndicators from './ThumbnailBottomIndicators';
 import ThumbnailTopIndicators from './ThumbnailTopIndicators';
@@ -133,6 +139,12 @@ export type Props = {|
     _isCurrentlyOnLargeVideo: boolean,
 
     /**
+     * Indicates whether the participant is a fake screen share participant. This prop is behind the
+     * sourceNameSignaling feature flag.
+     */
+    _isFakeScreenShareParticipant: boolean,
+
+    /**
      * Whether we are currently running in a mobile browser.
      */
     _isMobile: boolean,
@@ -181,6 +193,13 @@ export type Props = {|
      * Whether or not the stage filmstrip is disabled.
      */
     _stageFilmstripDisabled: boolean,
+
+    /**
+     * Whether or not the participants are displayed on stage.
+     * (and not screensharing or shared video; used to determine
+     * whether or not the display the participant video in the vertical filmstrip).
+     */
+    _stageParticipantsVisible: boolean,
 
     /**
      * The video object position for the participant.
@@ -535,6 +554,7 @@ class Thumbnail extends Component<Props, State> {
             _currentLayout,
             _disableTileEnlargement,
             _height,
+            _isFakeScreenShareParticipant,
             _isHidden,
             _isScreenSharing,
             _participant,
@@ -572,7 +592,7 @@ class Thumbnail extends Component<Props, State> {
             || _disableTileEnlargement
             || _isScreenSharing;
 
-        if (canPlayEventReceived || _participant.local) {
+        if (canPlayEventReceived || _participant.local || _isFakeScreenShareParticipant) {
             videoStyles = {
                 objectFit: doNotStretchVideo ? 'contain' : 'cover'
             };
@@ -630,7 +650,7 @@ class Thumbnail extends Component<Props, State> {
             } ]));
             dispatch(pinParticipant(pinned ? null : id));
         } else {
-            dispatch(addStageParticipant(id, true));
+            dispatch(togglePinStageParticipant(id));
         }
     }
 
@@ -1021,7 +1041,7 @@ class Thumbnail extends Component<Props, State> {
      * @returns {ReactElement}
      */
     render() {
-        const { _participant } = this.props;
+        const { _participant, _isFakeScreenShareParticipant } = this.props;
 
         if (!_participant) {
             return null;
@@ -1035,6 +1055,29 @@ class Thumbnail extends Component<Props, State> {
 
         if (isFakeParticipant) {
             return this._renderFakeParticipant();
+        }
+
+        if (_isFakeScreenShareParticipant) {
+            const { isHovered } = this.state;
+            const { _videoTrack, _isMobile, classes } = this.props;
+
+            return (
+                <FakeScreenShareParticipant
+                    classes = { classes }
+                    containerClassName = { this._getContainerClassName() }
+                    isHovered = { isHovered }
+                    isMobile = { _isMobile }
+                    onClick = { this._onClick }
+                    onMouseEnter = { this._onMouseEnter }
+                    onMouseLeave = { this._onMouseLeave }
+                    onMouseMove = { this._onMouseMove }
+                    onTouchEnd = { this._onTouchEnd }
+                    onTouchMove = { this._onTouchMove }
+                    onTouchStart = { this._onTouchStart }
+                    participantId = { _participant.id }
+                    styles = { this._getStyles() }
+                    videoTrack = { _videoTrack } />
+            );
         }
 
         return this._renderParticipant();
@@ -1056,8 +1099,16 @@ function _mapStateToProps(state, ownProps): Object {
     const id = participant?.id;
     const isLocal = participant?.local ?? true;
     const tracks = state['features/base/tracks'];
-    const _videoTrack = isLocal
-        ? getLocalVideoTrack(tracks) : getTrackByMediaTypeAndParticipant(tracks, MEDIA_TYPE.VIDEO, participantID);
+    const sourceNameSignalingEnabled = getSourceNameSignalingFeatureFlag(state);
+
+    let _videoTrack;
+
+    if (sourceNameSignalingEnabled && participant?.isFakeScreenShareParticipant) {
+        _videoTrack = getFakeScreenshareParticipantTrack(tracks, id);
+    } else {
+        _videoTrack = isLocal
+            ? getLocalVideoTrack(tracks) : getTrackByMediaTypeAndParticipant(tracks, MEDIA_TYPE.VIDEO, participantID);
+    }
     const _audioTrack = isLocal
         ? getLocalAudioTrack(tracks) : getTrackByMediaTypeAndParticipant(tracks, MEDIA_TYPE.AUDIO, participantID);
     const _currentLayout = stageFilmstrip ? LAYOUTS.TILE_VIEW : getCurrentLayout(state);
@@ -1139,6 +1190,7 @@ function _mapStateToProps(state, ownProps): Object {
 
     const { gifUrl: gifSrc } = getGifForParticipant(state, id);
     const mode = getGifDisplayMode(state);
+    const participantId = isLocal ? getLocalParticipant(state).id : participantID;
 
     return {
         _audioTrack,
@@ -1146,11 +1198,12 @@ function _mapStateToProps(state, ownProps): Object {
         _defaultLocalDisplayName: defaultLocalDisplayName,
         _disableLocalVideoFlip: Boolean(disableLocalVideoFlip),
         _disableTileEnlargement: Boolean(disableTileEnlargement),
-        _isActiveParticipant: activeParticipants.find(pId => pId === participantID),
+        _isActiveParticipant: activeParticipants.find(pId => pId === participantId),
         _isHidden: isLocal && iAmRecorder && !iAmSipGateway,
         _isAudioOnly: Boolean(state['features/base/audio-only'].enabled),
         _isCurrentlyOnLargeVideo: state['features/large-video']?.participantId === id,
         _isDominantSpeakerDisabled: interfaceConfig.DISABLE_DOMINANT_SPEAKER_INDICATOR,
+        _isFakeScreenShareParticipant: sourceNameSignalingEnabled && participant?.isFakeScreenShareParticipant,
         _isMobile,
         _isMobilePortrait,
         _isScreenSharing: _videoTrack?.videoType === 'desktop',
@@ -1160,6 +1213,7 @@ function _mapStateToProps(state, ownProps): Object {
         _participant: participant,
         _raisedHand: hasRaisedHand(participant),
         _stageFilmstripDisabled: !isStageFilmstripEnabled(state),
+        _stageParticipantsVisible: shouldDisplayStageFilmstrip(state, 1),
         _videoObjectPosition: getVideoObjectPosition(state, participant?.id),
         _videoTrack,
         ...size,

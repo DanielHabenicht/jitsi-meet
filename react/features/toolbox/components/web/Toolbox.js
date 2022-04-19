@@ -1,8 +1,7 @@
 // @flow
 
 import { withStyles } from '@material-ui/core/styles';
-import clsx from 'clsx';
-import React, { Component, Fragment } from 'react';
+import React, { Component } from 'react';
 import { batch } from 'react-redux';
 
 import keyboardShortcut from '../../../../../modules/keyboardshortcut/keyboardshortcut';
@@ -12,6 +11,7 @@ import {
     createToolbarEvent,
     sendAnalytics
 } from '../../../analytics';
+import { ContextMenu, ContextMenuItemGroup } from '../../../base/components';
 import { getToolbarButtons } from '../../../base/config';
 import { isToolbarButtonEnabled } from '../../../base/config/functions.web';
 import { openDialog, toggleDialog } from '../../../base/dialog';
@@ -46,12 +46,13 @@ import { getParticipantsPaneOpen } from '../../../participants-pane/functions';
 import { addReactionToBuffer } from '../../../reactions/actions.any';
 import { toggleReactionsMenuVisibility } from '../../../reactions/actions.web';
 import { ReactionsMenuButton } from '../../../reactions/components';
-import { REACTIONS, REACTIONS_MENU_HEIGHT } from '../../../reactions/constants';
+import { REACTIONS } from '../../../reactions/constants';
 import { isReactionsEnabled } from '../../../reactions/functions.any';
 import {
     LiveStreamButton,
     RecordButton
 } from '../../../recording';
+import { isSalesforceEnabled } from '../../../salesforce/functions';
 import {
     isScreenAudioSupported,
     isScreenVideoShared,
@@ -80,7 +81,7 @@ import {
     setToolbarHovered,
     showToolbox
 } from '../../actions';
-import { THRESHOLDS, NOT_APPLICABLE, DRAWER_MAX_HEIGHT, NOTIFY_CLICK_MODE } from '../../constants';
+import { THRESHOLDS, NOT_APPLICABLE, NOTIFY_CLICK_MODE } from '../../constants';
 import { isDesktopShareButtonDisabled, isToolboxVisible } from '../../functions';
 import DownloadButton from '../DownloadButton';
 import HangupButton from '../HangupButton';
@@ -284,18 +285,13 @@ type Props = {
 
 declare var APP: Object;
 
-const styles = theme => {
+const styles = () => {
     return {
-        overflowMenu: {
-            fontSize: 14,
-            listStyleType: 'none',
-            padding: '8px 0',
-            backgroundColor: theme.palette.ui03
-        },
-
-        overflowMenuDrawer: {
-            overflowY: 'auto',
-            height: `calc(${DRAWER_MAX_HEIGHT} - ${REACTIONS_MENU_HEIGHT}px - 16px)`
+        contextMenu: {
+            position: 'relative',
+            right: 'auto',
+            maxHeight: 'inherit',
+            margin: 0
         }
     };
 };
@@ -875,6 +871,27 @@ class Toolbox extends Component<Props> {
         };
     }
 
+
+    /**
+     * Returns the notify mode of the given toolbox button.
+     *
+     * @param {string} btnName - The toolbar button's name.
+     * @returns {string|undefined} - The button's notify mode.
+     */
+    _getButtonNotifyMode(btnName) {
+        const notify = this.props._buttonsWithNotifyClick?.find(
+            (btn: string | Object) =>
+                (typeof btn === 'string' && btn === btnName)
+                || (typeof btn === 'object' && btn.key === btnName)
+        );
+
+        if (notify) {
+            return typeof notify === 'string' || notify.preventExecution
+                ? NOTIFY_CLICK_MODE.PREVENT_AND_NOTIFY
+                : NOTIFY_CLICK_MODE.ONLY_NOTIFY;
+        }
+    }
+
     /**
      * Sets the notify click mode for the buttons.
      *
@@ -888,19 +905,7 @@ class Toolbox extends Component<Props> {
 
         Object.values(buttons).forEach((button: any) => {
             if (typeof button === 'object') {
-                const notify = this.props._buttonsWithNotifyClick.find(
-                    (btn: string | Object) =>
-                        (typeof btn === 'string' && btn === button.key)
-                        || (typeof btn === 'object' && btn.key === button.key)
-                );
-
-                if (notify) {
-                    const notifyMode = typeof notify === 'string' || notify.preventExecution
-                        ? NOTIFY_CLICK_MODE.PREVENT_AND_NOTIFY
-                        : NOTIFY_CLICK_MODE.ONLY_NOTIFY;
-
-                    button.notifyMode = notifyMode;
-                }
+                button.notifyMode = this._getButtonNotifyMode(button.key);
             }
         });
     }
@@ -1344,35 +1349,47 @@ class Toolbox extends Component<Props> {
                                 showMobileReactions = {
                                     _reactionsEnabled && overflowMenuButtons.find(({ key }) => key === 'raisehand')
                                 }>
-                                <ul
-                                    aria-label = { t(toolbarAccLabel) }
-                                    className = { clsx(classes.overflowMenu,
-                                        _overflowDrawer && classes.overflowMenuDrawer)
-                                    }
-                                    id = 'overflow-menu'
-                                    onKeyDown = { this._onEscKey }
-                                    role = 'menu'>
-                                    {overflowMenuButtons.map(({ group, key, Content, ...rest }, index, arr) => {
-                                        const showSeparator = index > 0 && arr[index - 1].group !== group;
+                                <ContextMenu
+                                    accessibilityLabel = { t(toolbarAccLabel) }
+                                    className = { classes.contextMenu }
+                                    hidden = { false }
+                                    inDrawer = { _overflowDrawer }
+                                    onKeyDown = { this._onEscKey }>
+                                    {overflowMenuButtons.reduce((acc, val) => {
+                                        if (acc.length) {
+                                            const prev = acc[acc.length - 1];
+                                            const group = prev[prev.length - 1].group;
 
-                                        return (key !== 'raisehand' || !_reactionsEnabled)
-                                            && <Fragment key = { `f${key}` }>
-                                                {showSeparator && <Separator key = { `hr${group}` } />}
-                                                <Content
+                                            if (group === val.group) {
+                                                prev.push(val);
+                                            } else {
+                                                acc.push([ val ]);
+                                            }
+                                        } else {
+                                            acc.push([ val ]);
+                                        }
+
+                                        return acc;
+                                    }, []).map(buttonGroup => (
+                                        <ContextMenuItemGroup key = { `group-${buttonGroup[0].group}` }>
+                                            {buttonGroup.map(({ key, Content, ...rest }) => (
+                                                key !== 'raisehand' || !_reactionsEnabled)
+                                                && <Content
                                                     { ...rest }
                                                     buttonKey = { key }
+                                                    contextMenu = { true }
                                                     key = { key }
-                                                    showLabel = { true } />
-                                            </Fragment>
-                                        ;
-                                    })}
-                                </ul>
+                                                    showLabel = { true } />)}
+                                        </ContextMenuItemGroup>))}
+                                </ContextMenu>
                             </OverflowMenuButton>
                         )}
 
                         <HangupButton
+                            buttonKey = 'hangup'
                             customClass = 'hangup-button'
                             key = 'hangup-button'
+                            notifyMode = { this._getButtonNotifyMode('hangup') }
                             visible = { isToolbarButtonEnabled('hangup', _toolbarButtons) } />
                     </div>
                 </div>
@@ -1399,8 +1416,7 @@ function _mapStateToProps(state, ownProps) {
         disableProfile,
         enableFeaturesBasedOnToken,
         iAmRecorder,
-        iAmSipGateway,
-        salesforceUrl
+        iAmSipGateway
     } = state['features/base/config'];
     const {
         fullScreen,
@@ -1449,7 +1465,7 @@ function _mapStateToProps(state, ownProps) {
         _isIosMobile: isIosMobileBrowser(),
         _isMobile: isMobileBrowser(),
         _isVpaasMeeting: isVpaasMeeting(state),
-        _hasSalesforce: Boolean(salesforceUrl),
+        _hasSalesforce: isSalesforceEnabled(state),
         _localParticipantID: localParticipant?.id,
         _localVideo: localVideo,
         _overflowMenuVisible: overflowMenuVisible,

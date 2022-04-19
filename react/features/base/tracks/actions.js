@@ -6,8 +6,9 @@ import {
 } from '../../analytics';
 import { NOTIFICATION_TIMEOUT_TYPE, showErrorNotification, showNotification } from '../../notifications';
 import { getCurrentConference } from '../conference';
-import { getMultipleVideoSupportFeatureFlag } from '../config';
-import { JitsiTrackErrors, JitsiTrackEvents, createLocalTrack } from '../lib-jitsi-meet';
+import { getMultipleVideoSupportFeatureFlag, getSourceNameSignalingFeatureFlag } from '../config';
+import { JitsiTrackErrors, JitsiTrackEvents } from '../lib-jitsi-meet';
+import { createLocalTrack } from '../lib-jitsi-meet/functions';
 import {
     CAMERA_FACING_MODE,
     MEDIA_TYPE,
@@ -21,6 +22,7 @@ import { getLocalParticipant } from '../participants';
 import { updateSettings } from '../settings';
 
 import {
+    SCREENSHARE_TRACK_MUTED_UPDATED,
     SET_NO_SRC_DATA_NOTIFICATION_UID,
     TOGGLE_SCREENSHARING,
     TRACK_ADDED,
@@ -395,7 +397,12 @@ export function trackAdded(track) {
     return async (dispatch, getState) => {
         track.on(
             JitsiTrackEvents.TRACK_MUTE_CHANGED,
-            () => dispatch(trackMutedChanged(track)));
+        () => {
+            if (getSourceNameSignalingFeatureFlag(getState()) && track.getVideoType() === VIDEO_TYPE.DESKTOP) {
+                dispatch(screenshareTrackMutedChanged(track));
+            }
+            dispatch(trackMutedChanged(track));
+        });
         track.on(
             JitsiTrackEvents.TRACK_VIDEOTYPE_CHANGED,
             type => dispatch(trackVideoTypeChanged(track, type)));
@@ -488,6 +495,24 @@ export function trackMutedChanged(track) {
             jitsiTrack: track,
             muted: track.isMuted()
         }
+    };
+}
+
+/**
+ * Create an action for when a screenshare track's muted state has been signaled to be changed.
+ *
+ * @param {(JitsiLocalTrack|JitsiRemoteTrack)} track - JitsiTrack instance.
+ * @returns {{
+ *     type: TRACK_UPDATED,
+ *     track: Track,
+ *     muted: boolean
+ * }}
+ */
+export function screenshareTrackMutedChanged(track) {
+    return {
+        type: SCREENSHARE_TRACK_MUTED_UPDATED,
+        track: { jitsiTrack: track },
+        muted: track.isMuted()
     };
 }
 

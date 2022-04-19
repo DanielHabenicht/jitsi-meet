@@ -38,7 +38,8 @@ StateListenerRegistry.register(
     /* selector */ state => {
         return {
             numberOfParticipants: getParticipantCountWithFake(state),
-            disableSelfView: shouldHideSelfView(state)
+            disableSelfView: shouldHideSelfView(state),
+            localScreenShare: state['features/base/participants'].localScreenShare
         };
     },
     /* listener */ (currentState, store) => {
@@ -59,8 +60,11 @@ StateListenerRegistry.register(
  * Listens for changes in the selected layout to calculate the dimensions of the tile view grid and horizontal view.
  */
 StateListenerRegistry.register(
-    /* selector */ state => getCurrentLayout(state),
-    /* listener */ (layout, store) => {
+    /* selector */ state => {
+        return { layout: getCurrentLayout(state),
+            width: state['features/base/responsive-ui'].clientWidth };
+    },
+    /* listener */ ({ layout }, store) => {
         switch (layout) {
         case LAYOUTS.TILE_VIEW:
             store.dispatch(setTileViewDimensions());
@@ -72,6 +76,8 @@ StateListenerRegistry.register(
             store.dispatch(setVerticalViewDimensions());
             break;
         }
+    }, {
+        deepEquals: true
     });
 
 /**

@@ -12,13 +12,12 @@ import {
     createToolbarEvent,
     sendAnalytics
 } from '../../../analytics';
-import { getToolbarButtons } from '../../../base/config';
+import { getSourceNameSignalingFeatureFlag, getToolbarButtons } from '../../../base/config';
 import { isMobileBrowser } from '../../../base/environment/utils';
 import { translate } from '../../../base/i18n';
 import { Icon, IconMenuDown, IconMenuUp } from '../../../base/icons';
 import { connect } from '../../../base/redux';
 import { shouldHideSelfView } from '../../../base/settings/functions.any';
-import { CHAT_SIZE } from '../../../chat';
 import { showToolbox } from '../../../toolbox/actions.web';
 import { isButtonEnabled, isToolboxVisible } from '../../../toolbox/functions.web';
 import { LAYOUTS } from '../../../video-layout';
@@ -57,11 +56,6 @@ type Props = {
      * Additional CSS class names top add to the root.
      */
     _className: string,
-
-    /**
-     * Whether or not the chat is open.
-     */
-    _chatOpen: boolean,
 
     /**
      * The current layout of the filmstrip.
@@ -112,6 +106,11 @@ type Props = {
      * Whether or not the current layout is vertical filmstrip.
      */
     _isVerticalFilmstrip: boolean,
+
+    /**
+     * The local screen share participant. This prop is behind the sourceNameSignaling feature flag.
+     */
+     _localScreenShare: Object,
 
     /**
      * The maximum width of the vertical filmstrip.
@@ -305,9 +304,9 @@ class Filmstrip extends PureComponent <Props, State> {
     render() {
         const filmstripStyle = { };
         const {
-            _chatOpen,
             _currentLayout,
             _disableSelfView,
+            _localScreenShare,
             _resizableFilmstrip,
             _stageFilmstrip,
             _visible,
@@ -329,7 +328,7 @@ class Filmstrip extends PureComponent <Props, State> {
         }
         case LAYOUTS.TILE_VIEW: {
             if (_stageFilmstrip && _visible) {
-                filmstripStyle.maxWidth = `calc(100% - ${_verticalViewMaxWidth}px - ${_chatOpen ? CHAT_SIZE : 0}px)`;
+                filmstripStyle.maxWidth = `calc(100% - ${_verticalViewMaxWidth}px)`;
             }
             break;
         }
@@ -357,6 +356,20 @@ class Filmstrip extends PureComponent <Props, State> {
                                     key = 'local' />
                             </div>
                         }
+                    </div>
+                )}
+                {_localScreenShare && !_disableSelfView && !_verticalViewGrid && (
+                    <div
+                        className = 'filmstrip__videos'
+                        id = 'filmstripLocalScreenShare'>
+                        <div id = 'filmstripLocalScreenShareThumbnail'>
+                            {
+                                !tileViewActive && <Thumbnail
+                                    key = 'localScreenShare'
+                                    participantID = { _localScreenShare.id } />
+
+                            }
+                        </div>
                     </div>
                 )}
                 {
@@ -789,6 +802,7 @@ function _mapStateToProps(state, ownProps) {
     const { testing = {}, iAmRecorder } = state['features/base/config'];
     const enableThumbnailReordering = testing.enableThumbnailReordering ?? true;
     const { visible, width: verticalFilmstripWidth } = state['features/filmstrip'];
+    const { localScreenShare } = state['features/base/participants'];
     const reduceHeight = state['features/toolbox'].visible && toolbarButtons.length;
     const remoteVideosVisible = shouldRemoteVideosBeVisible(state);
     const { isOpen: shiftRight } = state['features/chat'];
@@ -815,6 +829,7 @@ function _mapStateToProps(state, ownProps) {
         _isFilmstripButtonEnabled: isButtonEnabled('filmstrip', state),
         _isToolboxVisible: isToolboxVisible(state),
         _isVerticalFilmstrip: ownProps._currentLayout === LAYOUTS.VERTICAL_FILMSTRIP_VIEW,
+        _localScreenShare: getSourceNameSignalingFeatureFlag(state) && localScreenShare,
         _maxFilmstripWidth: clientWidth - MIN_STAGE_VIEW_WIDTH,
         _thumbnailsReordered: enableThumbnailReordering,
         _verticalFilmstripWidth: verticalFilmstripWidth.current,

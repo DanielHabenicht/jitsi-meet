@@ -31,6 +31,7 @@
     },
     "audioDevices": {
         "bluetooth": "Bluetooth",
+        "car": "Car Audio",
         "headphones": "Headphones",
         "none": "No audio devices available",
         "phone": "Phone",
@@ -841,7 +842,7 @@
     "raisedHandsLabel": "Number of raised hands",
     "record": {
         "already": {
-            "linked": "Record is already linked to this session."
+            "linked": "The meeting is already linked to this Salesforce object."
         },
         "type": {
             "account": "Account",
@@ -893,6 +894,7 @@
         "unavailableTitle": "Recording unavailable",
         "uploadToCloud": "Upload to the cloud"
     },
+    "screenshareDisplayName": "{{name}}'s screen",
     "sectionList": {
         "pullToRefresh": "Pull to refresh"
     },
@@ -919,6 +921,7 @@
         "incomingMessage": "Incoming message",
         "language": "Language",
         "loggedIn": "Logged in as {{name}}",
+        "maxStageParticipants": "Maximum number of participants who can be pinned to the main stage",
         "microphones": "Microphones",
         "moderator": "Moderator",
         "more": "More",

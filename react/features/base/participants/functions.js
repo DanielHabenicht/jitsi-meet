@@ -3,8 +3,10 @@
 import { getGravatarURL } from '@jitsi/js-utils/avatar';
 import type { Store } from 'redux';
 
+import { i18next } from '../../base/i18n';
 import { isStageFilmstripEnabled } from '../../filmstrip/functions';
 import { GRAVATAR_BASE_URL, isCORSAvatarURL } from '../avatar';
+import { getSourceNameSignalingFeatureFlag } from '../config';
 import { JitsiParticipantConnectionStatus } from '../lib-jitsi-meet';
 import { MEDIA_TYPE, shouldRenderVideoTrack } from '../media';
 import { toState } from '../redux';
@@ -92,6 +94,35 @@ export function getLocalParticipant(stateful: Object | Function) {
 }
 
 /**
+ * Returns local screen share participant from Redux state.
+ *
+ * @param {(Function|Object)} stateful - The (whole) redux state, or redux's
+ * {@code getState} function to be used to retrieve the state features/base/participants.
+ * @returns {(Participant|undefined)}
+ */
+export function getLocalScreenShareParticipant(stateful: Object | Function) {
+    const state = toState(stateful)['features/base/participants'];
+
+    return state.localScreenShare;
+}
+
+/**
+ * Returns screenshare participant.
+ *
+ * @param {(Function|Object)} stateful - The (whole) redux state, or redux's {@code getState} function to be used to
+ * retrieve the state features/base/participants.
+ * @param {string} id - The owner ID of the screenshare participant to retrieve.
+ * @returns {(Participant|undefined)}
+ */
+export function getScreenshareParticipantByOwnerId(stateful: Object | Function, id: string) {
+    const track = getTrackByMediaTypeAndParticipant(
+        toState(stateful)['features/base/tracks'], MEDIA_TYPE.SCREENSHARE, id
+    );
+
+    return getParticipantById(stateful, track?.jitsiTrack.getSourceName());
+}
+
+/**
  * Normalizes a display name so then no invalid values (padding, length...etc)
  * can be set.
  *
@@ -119,9 +150,11 @@ export function getNormalizedDisplayName(name: string) {
 export function getParticipantById(
         stateful: Object | Function, id: string): ?Object {
     const state = toState(stateful)['features/base/participants'];
-    const { local, remote } = state;
+    const { local, localScreenShare, remote } = state;
 
-    return remote.get(id) || (local?.id === id ? local : undefined);
+    return remote.get(id)
+        || (local?.id === id ? local : undefined)
+        || (localScreenShare?.id === id ? localScreenShare : undefined);
 }
 
 /**
@@ -148,10 +181,31 @@ export function getParticipantByIdOrUndefined(stateful: Object | Function, parti
  * @returns {number}
  */
 export function getParticipantCount(stateful: Object | Function) {
-    const state = toState(stateful)['features/base/participants'];
-    const { local, remote, fakeParticipants } = state;
+    const state = toState(stateful);
+    const {
+        local,
+        remote,
+        fakeParticipants,
+        sortedRemoteFakeScreenShareParticipants
+    } = state['features/base/participants'];
+
+    if (getSourceNameSignalingFeatureFlag(state)) {
+        return remote.size - fakeParticipants.size - sortedRemoteFakeScreenShareParticipants.size + (local ? 1 : 0);
+    }
 
     return remote.size - fakeParticipants.size + (local ? 1 : 0);
+
+}
+
+/**
+ * Returns participant ID of the owner of a fake screenshare participant.
+ *
+ * @param {string} id - The ID of the fake screenshare participant.
+ * @private
+ * @returns {(string|undefined)}
+ */
+export function getFakeScreenShareParticipantOwnerId(id: string) {
+    return id.split('-')[0];
 }
 
 /**
@@ -177,6 +231,10 @@ export function getFakeParticipants(stateful: Object | Function) {
 export function getRemoteParticipantCount(stateful: Object | Function) {
     const state = toState(stateful)['features/base/participants'];
 
+    if (getSourceNameSignalingFeatureFlag(state)) {
+        return state.remote.size - state.sortedRemoteFakeScreenShareParticipants.size;
+    }
+
     return state.remote.size;
 }
 
@@ -190,8 +248,12 @@ export function getRemoteParticipantCount(stateful: Object | Function) {
  * @returns {number}
  */
 export function getParticipantCountWithFake(stateful: Object | Function) {
-    const state = toState(stateful)['features/base/participants'];
-    const { local, remote } = state;
+    const state = toState(stateful);
+    const { local, localScreenShare, remote } = state['features/base/participants'];
+
+    if (getSourceNameSignalingFeatureFlag(state)) {
+        return remote.size + (local ? 1 : 0) + (localScreenShare ? 1 : 0);
+    }
 
     return remote.size + (local ? 1 : 0);
 }
@@ -199,14 +261,12 @@ export function getParticipantCountWithFake(stateful: Object | Function) {
 /**
  * Returns participant's display name.
  *
- * @param {(Function|Object)} stateful - The (whole) redux state, or redux's
- * {@code getState} function to be used to retrieve the state.
+ * @param {(Function|Object)} stateful - The (whole) redux state, or redux's {@code getState} function to be used to
+ * retrieve the state.
  * @param {string} id - The ID of the participant's display name to retrieve.
  * @returns {string}
  */
-export function getParticipantDisplayName(
-        stateful: Object | Function,
-        id: string) {
+export function getParticipantDisplayName(stateful: Object | Function, id: string) {
     const participant = getParticipantById(stateful, id);
     const {
         defaultLocalDisplayName,
@@ -214,6 +274,10 @@ export function getParticipantDisplayName(
     } = toState(stateful)['features/base/config'];
 
     if (participant) {
+        if (participant.isFakeScreenShareParticipant) {
+            return getScreenshareParticipantDisplayName(stateful, id);
+        }
+
         if (participant.name) {
             return participant.name;
         }
@@ -224,6 +288,21 @@ export function getParticipantDisplayName(
     }
 
     return defaultRemoteDisplayName;
+}
+
+/**
+ * Returns screenshare participant's display name.
+ *
+ * @param {(Function|Object)} stateful - The (whole) redux state, or redux's {@code getState} function to be used to
+ * retrieve the state.
+ * @param {string} id - The ID of the screenshare participant's display name to retrieve.
+ * @returns {string}
+ */
+export function getScreenshareParticipantDisplayName(stateful: Object | Function, id: string) {
+    const owner = getParticipantById(stateful, getFakeScreenShareParticipantOwnerId(id));
+    const name = owner.name;
+
+    return i18next.t('screenshareDisplayName', { name });
 }
 
 /**

@@ -102,6 +102,7 @@ const events = {
     'email-change': 'emailChange',
     'error-occurred': 'errorOccurred',
     'endpoint-text-message-received': 'endpointTextMessageReceived',
+    'face-landmark-detected': 'faceLandmarkDetected',
     'feedback-submitted': 'feedbackSubmitted',
     'feedback-prompt-displayed': 'feedbackPromptDisplayed',
     'filmstrip-display-changed': 'filmstripDisplayChanged',
@@ -974,6 +975,17 @@ export default class JitsiMeetExternalAPI extends EventEmitter {
     isSharingScreen() {
         return this._transport.sendRequest({
             name: 'is-sharing-screen'
+        });
+    }
+
+    /**
+     * Returns wether meeting is started silent.
+     *
+     * @returns {Promise} - Resolves with start silent status.
+     */
+    isStartSilent() {
+        return this._transport.sendRequest({
+            name: 'is-start-silent'
         });
     }
 
