@@ -43,23 +43,35 @@ type Props = AbstractButtonProps & {
  * Implements an {@link AbstractButton} to open the user documentation in a new window.
  */
 class SharedIFrameButton extends AbstractButton<Props, *> {
-    accessibilityLabel = `toolbar.accessibilityLabel.sharediframe.${this.props.shareKey}`;
+    accessibilityLabel = this.props.t('toolbar.accessibilityLabel.sharediframe', {
+        iframename: this.props.shareKey
+    });
     icon = IconShareIFrame;
-    label = `toolbar.sharediframe.${this.props.shareKey}`;
-    toggledLabel = `toolbar.stopSharedIFrame.${this.props.shareKey}`;
+    label = this.props.t('toolbar.sharediframe', {
+        iframename: this.props.shareKey
+    });
+    toggledLabel = this.props.t('toolbar.stopSharedIFrame', {
+        iframename: this.props.shareKey
+    });
 
     /**
      * Dynamically retrieves tooltip based on sharing state.
      */
     get tooltip() {
         if (this._isDisabled()) {
-            return `toolbar.disabledSharedIFrame.${this.props.shareKey}`;
+            return this.props.t('toolbar.disabledSharedIFrame', {
+                iframename: this.props.shareKey
+            });
         }
         if (this._isToggled()) {
-            return `toolbar.stopSharedIFrame.${this.props.shareKey}`;
+            return this.props.t('toolbar.stopSharedIFrame', {
+                iframename: this.props.shareKey
+            });
         }
 
-        return `toolbar.sharediframe.${this.props.shareKey}`;
+        return this.props.t('toolbar.sharediframe', {
+            iframename: this.props.shareKey
+        });
     }
 
     /**
@@ -127,7 +139,7 @@ function _mapStateToProps(state, ownProps): Object {
 
     return {
         _isDisabled: sharedIFrames[ownProps.shareKey]?.disabled || false,
-        _sharingIFrame: sharedIFrames[ownProps.shareKey]?.isSharing || false
+        _sharingIFrame: sharedIFrames[ownProps.shareKey]?.isSharing || false,
     };
 }
 

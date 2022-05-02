@@ -1055,10 +1055,7 @@
             "shareRoom": "Invite someone",
             "shareYourScreen": "Start / Stop sharing your screen",
             "shareaudio": "Share audio",
-            "sharediframe": {
-                "etherpad": "Toggle Etherpad sharing",
-                "whiteboard": "Toggle Whiteboard sharing"
-            },
+            "sharediframe": "Toggle {{iframename}} sharing",
             "sharedvideo": "Toggle video sharing",
             "shortcuts": "Toggle shortcuts",
             "show": "Show on stage",
@@ -1084,10 +1081,7 @@
         "closeChat": "Close chat",
         "closeReactionsMenu": "Close reactions menu",
         "disableReactionSounds": "You can disable reaction sounds for this meeting",
-        "disabledSharedIFrame": {
-            "etherpad": "Someone else is already sharing Etherpad.",
-            "whiteboard": "Someone else is already sharing Whiteboard."
-        },
+        "disabledSharedIFrame": "Someone else is already sharing {{iframename}}.",
         "documentClose": "Close shared document",
         "documentOpen": "Open shared document",
         "download": "Download our apps",
@@ -1142,10 +1136,7 @@
         "selectBackground": "Select background",
         "shareRoom": "Invite someone",
         "shareaudio": "Share audio",
-        "sharediframe": {
-            "etherpad": "Share Etherpad",
-            "whiteboard": "Share Whiteboard"
-        },
+        "sharediframe": "Share {{iframename}}",
         "sharedvideo": "Share video",
         "shortcuts": "View shortcuts",
         "silence": "Silence",
@@ -1154,10 +1145,7 @@
         "startSubtitles": "Start subtitles",
         "stopAudioSharing": "Stop audio sharing",
         "stopScreenSharing": "Stop screen sharing",
-        "stopSharedIFrame": {
-            "etherpad": "Stop Etherpad",
-            "whiteboard": "Stop Whiteboard"
-        },
+        "stopSharedIFrame": "Stop {{iframename}}",
         "stopSharedVideo": "Stop video",
         "stopSubtitles": "Stop subtitles",
         "surprised": "Surprised",
