@@ -1438,14 +1438,7 @@ function _mapStateToProps(state, ownProps) {
         }
     }
 
-    let { toolbarButtons } = ownProps;
-    const stateToolbarButtons = getToolbarButtons(state);
-
-    if (toolbarButtons) {
-        toolbarButtons = toolbarButtons.filter(name => isToolbarButtonEnabled(name, stateToolbarButtons));
-    } else {
-        toolbarButtons = stateToolbarButtons;
-    }
+    const toolbarButtons = ownProps.toolbarButtons || getToolbarButtons(state);
 
     return {
         _backgroundType: state['features/virtual-background'].backgroundType,

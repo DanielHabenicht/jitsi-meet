@@ -24,7 +24,8 @@ import {
     SET_VERTICAL_VIEW_DIMENSIONS,
     SET_VOLUME,
     SET_MAX_STAGE_PARTICIPANTS,
-    TOGGLE_PIN_STAGE_PARTICIPANT
+    TOGGLE_PIN_STAGE_PARTICIPANT,
+    CLEAR_STAGE_PARTICIPANTS
 } from './actionTypes';
 import {
     HORIZONTAL_FILMSTRIP_MARGIN,
@@ -266,8 +267,6 @@ export function setStageFilmstripViewDimensions() {
         const state = getState();
         const { clientHeight, clientWidth } = state['features/base/responsive-ui'];
         const {
-            disableResponsiveTiles,
-            disableTileEnlargement,
             tileView = {}
         } = state['features/base/config'];
         const { visible } = state['features/filmstrip'];
@@ -275,24 +274,26 @@ export function setStageFilmstripViewDimensions() {
         const { numberOfVisibleTiles = MAX_ACTIVE_PARTICIPANTS } = tileView;
         const numberOfParticipants = state['features/filmstrip'].activeParticipants.length;
         const availableWidth = clientWidth - verticalWidth;
-        const maxColumns = getMaxColumnCount(state, { width: availableWidth });
+        const maxColumns = getMaxColumnCount(state, {
+            width: availableWidth,
+            disableResponsiveTiles: false,
+            disableTileEnlargement: false
+        });
 
         const {
             height,
             width,
             columns,
             rows
-        } = disableResponsiveTiles
-            ? calculateNonResponsiveTileViewDimensions(state, true)
-            : calculateResponsiveTileViewDimensions({
-                clientWidth: availableWidth,
-                clientHeight,
-                disableTileEnlargement,
-                maxColumns,
-                noHorizontalContainerMargin: verticalWidth > 0,
-                numberOfParticipants,
-                numberOfVisibleTiles
-            });
+        } = calculateResponsiveTileViewDimensions({
+            clientWidth: availableWidth,
+            clientHeight,
+            disableTileEnlargement: false,
+            maxColumns,
+            noHorizontalContainerMargin: verticalWidth > 0,
+            numberOfParticipants,
+            numberOfVisibleTiles
+        });
         const thumbnailsTotalHeight = rows * (TILE_VERTICAL_MARGIN + height);
         const hasScroll = clientHeight < thumbnailsTotalHeight;
         const filmstripWidth
@@ -467,5 +468,16 @@ export function togglePinStageParticipant(participantId) {
     return {
         type: TOGGLE_PIN_STAGE_PARTICIPANT,
         participantId
+    };
+}
+
+/**
+ * Clears the stage participants list.
+ *
+ * @returns {Object}
+ */
+export function clearStageParticipants() {
+    return {
+        type: CLEAR_STAGE_PARTICIPANTS
     };
 }

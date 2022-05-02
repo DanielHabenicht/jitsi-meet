@@ -1,7 +1,7 @@
 // @flow
 
 import { isMobileBrowser } from '../base/environment/utils';
-import { getParticipantCountWithFake } from '../base/participants';
+import { getParticipantCountWithFake, pinParticipant } from '../base/participants';
 import { StateListenerRegistry } from '../base/redux';
 import { clientResized } from '../base/responsive-ui';
 import { shouldHideSelfView } from '../base/settings';
@@ -12,6 +12,7 @@ import { setOverflowDrawer } from '../toolbox/actions.web';
 import { getCurrentLayout, shouldDisplayTileView, LAYOUTS } from '../video-layout';
 
 import {
+    clearStageParticipants,
     setHorizontalViewDimensions,
     setStageFilmstripViewDimensions,
     setTileViewDimensions,
@@ -24,7 +25,6 @@ import {
 import {
     isFilmstripResizable,
     isFilmstripScrollVisible,
-    shouldDisplayStageFilmstrip,
     updateRemoteParticipants
 } from './functions';
 
@@ -61,8 +61,13 @@ StateListenerRegistry.register(
  */
 StateListenerRegistry.register(
     /* selector */ state => {
-        return { layout: getCurrentLayout(state),
-            width: state['features/base/responsive-ui'].clientWidth };
+        const { clientHeight, clientWidth } = state['features/base/responsive-ui'];
+
+        return {
+            layout: getCurrentLayout(state),
+            height: clientHeight,
+            width: clientWidth
+        };
     },
     /* listener */ ({ layout }, store) => {
         switch (layout) {
@@ -74,6 +79,12 @@ StateListenerRegistry.register(
             break;
         case LAYOUTS.VERTICAL_FILMSTRIP_VIEW:
             store.dispatch(setVerticalViewDimensions());
+            if (store.getState()['features/filmstrip'].activeParticipants.length > 1) {
+                store.dispatch(clearStageParticipants());
+            }
+            break;
+        case LAYOUTS.STAGE_FILMSTRIP_VIEW:
+            store.dispatch(pinParticipant(null));
             break;
         }
     }, {
@@ -177,7 +188,7 @@ StateListenerRegistry.register(
         };
     },
     /* listener */(_, store) => {
-        if (shouldDisplayStageFilmstrip(store.getState())) {
+        if (getCurrentLayout(store.getState()) === LAYOUTS.STAGE_FILMSTRIP_VIEW) {
             store.dispatch(setStageFilmstripViewDimensions());
         }
     }, {

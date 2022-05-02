@@ -103,9 +103,18 @@ export function isReorderingEnabled(state) {
 }
 
 /**
- * Whether the stage filmstrip is disabled or not.
+ * Whether the stage filmstrip is available or not.
  *
  * @param {Object} state - Redux state.
+ * @returns {boolean}
+ */
+export function isStageFilmstripAvailable() {
+    return false;
+}
+
+/**
+ * Whether the stage filmstrip is enabled.
+ *
  * @returns {boolean}
  */
 export function isStageFilmstripEnabled() {
