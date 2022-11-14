@@ -25,6 +25,31 @@ if (window.Olm) {
     });
 }
 
+// DO NOT CHECK IN
+// Add in app.js or /features/app/actions.native.js
+// eslint-disable-next-line no-undef
+config = {
+    // eslint-disable-next-line no-undef
+    ...config,
+    sharedIFrames: {
+        restrictControlToInitialSharer: true,
+        frames: {
+            whiteboard: { // The Id of the sharedIframe
+                title: 'Whiteboard',
+                templateUrl: 'https://wbo.ophir.dev/boards/{room}?lang={lang}',
+                avatarUrl: 'images/sharedIFrameAvatar.svg'
+            },
+            etherpad: {
+                title: 'Document',
+                templateUrl: 'https://yopad.eu/p/{room}',
+                avatarUrl: 'images/sharedIFrameAvatarEtherpad.svg'
+            }
+       }
+    },
+    // sharedIFrames: undefined
+};
+
+
 window.APP = {
     API,
     conference,
